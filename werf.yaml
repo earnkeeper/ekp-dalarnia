@@ -1,0 +1,6 @@
+configVersion: 1
+project: dalarnia
+---
+image: job
+dockerfile: Dockerfile.job
+context: .

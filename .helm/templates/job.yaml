@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: job
+spec:
+  schedule: "*/10 * * * *"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            job: job
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: python
+              image: "{{ .Values.werf.image.job }}"
+              workingDir: /app
+              env:
+                - name: MONGO_URI
+                  value: "{{ .Values.mongodb.uri }}"
+                - name: MONGO_DB_NAME
+                  value: "{{ .Values.mongodb.dbName }}"
+                - name: ETHERSCAN_API_KEY
+                  value: "{{ .Values.etherscan.apiKey }}"
+                - name: ETHERSCAN_BASE_URL
+                  value: "{{ .Values.etherscan.baseUrl }}"
+                - name: WEB3_PROVIDER_URL
+                  value: "{{ .Values.web3.providerUrl }}"
