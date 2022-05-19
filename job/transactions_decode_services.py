@@ -5,8 +5,8 @@ from ekp_sdk.services import (CacheService, CoingeckoService, EtherscanService,
 from web3 import Web3
 from db.contract_logs_repo import ContractLogsRepo
 from db.contract_transactions_repo import ContractTransactionsRepo
-from db.market_transactions_repo import MarketTransactionsRepo
-from history_utils import PlayerHistory
+from db.market_transaction_repo import MarketTransactionsRepo
+from job.history_utils import PlayerHistory
 
 
 class TransactionDecoderService:
@@ -41,13 +41,20 @@ class TransactionDecoderService:
                 latest_block,
                 self.page_size
             )
-
+            print(f'len of trans is {len(next_trans)}')
             if not len(next_trans):
                 break
 
             buys = []
 
             for next_tran in next_trans:
+                # abi = await self.etherscan_service.get_abi(address=next_tran['to'])
+                abi_key = f"abi_for_contract_{next_tran['to']}"
+                abi_cached = await self.cache_service.wrap(abi_key,
+                                                           lambda: self.etherscan_service.get_abi(address=next_tran['to'])
+                                                           )
+                func_params = self.web3_service.decode_input(abi_cached, next_tran["input"])
+
                 input = next_tran["input"]
                 block_number = next_tran["blockNumber"]
 
@@ -55,7 +62,7 @@ class TransactionDecoderService:
                     latest_block = block_number
                     continue
 
-                buy = await self.__decode_tran(next_tran)
+                buy = await self.__decode_tran(next_tran, func_params)
                 if buy:
                     buys.append(buy)
                 # if input.startswith("0x38edf988"):
@@ -65,6 +72,10 @@ class TransactionDecoderService:
 
                 latest_block = block_number
 
+                print('here is the buy')
+                print(buy)
+            print('here is the buys')
+            print(buys)
             if len(buys):
                 self.market_transactions_repo.save(buys)
 
@@ -74,18 +85,12 @@ class TransactionDecoderService:
         print("✅ Finished decoding market transactions..")
 
 
-    async def __decode_tran(self, tran):
-        # if "logs" not in tran:
-        #     return None
-
+    async def __decode_tran(self, tran, param_dict):
         if tran['to'] == '':
             return None
-
-        contr_address, param_dict = self.hist_utils.get_input_decoded_dict(self.hist_utils.collection_1,
-                                                                           hsh=tran["hash"])
         if not param_dict:
             return None
-        descr = self.hist_utils.set_description(param_dict, contr_address)
+        descr = self.hist_utils.set_description(param_dict, tran['to'])
         if descr == '':
             return None
 

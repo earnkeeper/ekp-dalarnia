@@ -7,39 +7,36 @@ from decouple import config
 from web3 import Web3
 import requests as requests
 from pymongo import MongoClient
-
-
+from db.contract_transactions_repo import ContractTransactionsRepo
+from ekp_sdk.services import (CacheService, CoingeckoService, EtherscanService,
+                              Web3Service)
 
 
 class PlayerHistory:
-    BSCSACN_API_KEY = config('BSCSCAN_API_KEY')
-    con_link = 'mongodb://localhost:27017/'
-    cluster = MongoClient(con_link)
-    db = cluster['dalarnia']
-    collection_1 = db['contract_transactions']
+    # BSCSACN_API_KEY = '89A5FPSU6ABR84API3YMY4GJ9W45H7V4QZ'
+    # con_link = 'mongodb://localhost:27017/'
+    # cluster = MongoClient(con_link)
+    # db = cluster['dalarnia']
+    # collection_1 = db['contract_transactions']
 
-    def get_input_decoded_dict(self, coll, hsh):
-        # print('Hello')
-        tx = list(coll.find({
-            'hash': hsh
-        }
-        ))[0]
-        contr_address = tx['to']
-        # print(contr_address)
-        # if not contr_address:
-        #     return contr_address, {}
-        abi_endpoint = f"https://api.bscscan.com/api?module=contract&action=getabi&address={contr_address}&apikey={self.BSCSACN_API_KEY}"
-        abi = json.loads(requests.get(abi_endpoint).text)
-        w3 = Web3(Web3.HTTPProvider('https://bsc-dataseed.binance.org/'))
-        contract = w3.eth.contract(address=Web3.toChecksumAddress(contr_address), abi=abi["result"])
-        func_obj, func_params = contract.decode_function_input(tx["input"])
-        for key, value in func_params.items():
-            if isinstance(value, bytes):
-                func_params[key] = value.decode('utf-8', 'ignore')
+    def __init__(
+            self,
+            contract_transactions_repo: ContractTransactionsRepo,
+            etherscan_service: EtherscanService,
+            web3_service: Web3Service,
+    ):
+        self.contract_transactions_repo = contract_transactions_repo
+        self.etherscan_service = etherscan_service
+        self.web3_service = web3_service
 
-        # print(contr_address)
-        # print(func_params)
-        return contr_address, func_params
+    # async def get_input_decoded_dict(self, hsh):
+    #     tx = list(
+    #         self.contract_transactions_repo.collection.find({
+    #             'hash': hsh
+    #         })
+    #     )[0]
+    #     contr_address = tx['to']
+    #     return contr_address, func_params
 
     def craft_handler(self, param_dict):
         recipe_map = {

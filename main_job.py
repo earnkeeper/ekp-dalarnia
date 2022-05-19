@@ -1,4 +1,3 @@
-
 import asyncio
 import os
 
@@ -6,7 +5,10 @@ from decouple import AutoConfig, config
 from ekp_sdk import BaseContainer
 from db.contract_logs_repo import ContractLogsRepo
 from db.contract_transactions_repo import ContractTransactionsRepo
+from db.market_transaction_repo import MarketTransactionsRepo
 from job.sync_service import SyncService
+from job.transactions_decode_services import TransactionDecoderService
+from job.history_utils import PlayerHistory
 
 
 class AppContainer(BaseContainer):
@@ -23,10 +25,31 @@ class AppContainer(BaseContainer):
             mg_client=self.mg_client,
         )
 
+        self.market_transactions_repo = MarketTransactionsRepo(
+            mg_client=self.mg_client,
+        )
+
         self.sync_service = SyncService(
             contract_logs_repo=self.contract_logs_repo,
             contract_transactions_repo=self.contract_transactions_repo,
             etherscan_service=self.etherscan_service
+        )
+
+        self.hist_utils = PlayerHistory(
+            etherscan_service=self.etherscan_service,
+            web3_service=self.web3_service,
+            contract_transactions_repo=self.contract_transactions_repo
+        )
+
+        self.market_decoder_service = TransactionDecoderService(
+            cache_service=self.cache_service,
+            coingecko_service=self.coingecko_service,
+            contract_logs_repo=self.contract_logs_repo,
+            contract_transactions_repo=self.contract_transactions_repo,
+            etherscan_service=self.etherscan_service,
+            market_transactions_repo=self.market_transactions_repo,
+            web3_service=self.web3_service,
+            hist_utils=self.hist_utils
         )
 
 
@@ -70,16 +93,24 @@ if __name__ == '__main__':
         '0x3c45e5c77cc40eb51eaa5e85c1a9b30a43764ca9'
     ]
 
-    futures = []
+    # futures = []
 
     # for contract_address in contract_addresses:
     #     futures.append(
     #         container.sync_service.sync_transactions(contract_address))
 
-    for log_address in log_addresses:
-        futures.append(container.sync_service.sync_logs(log_address))
+    # for log_address in log_addresses:
+    #     futures.append(container.sync_service.sync_logs(log_address))
+    #
+
+    # loop.run_until_complete(
+    #     container.market_decoder_service.decode_trans()
+    # )
+
+    # loop.run_until_complete(
+    #     asyncio.gather(*futures)
+    # )
 
     loop.run_until_complete(
-        asyncio.gather(*futures)
+        container.market_decoder_service.decode_trans()
     )
-
