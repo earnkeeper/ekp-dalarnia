@@ -72,9 +72,9 @@ if __name__ == '__main__':
 
     futures = []
 
-    for contract_address in contract_addresses:
-        futures.append(
-            container.sync_service.sync_transactions(contract_address))
+    # for contract_address in contract_addresses:
+    #     futures.append(
+    #         container.sync_service.sync_transactions(contract_address))
 
     for log_address in log_addresses:
         futures.append(container.sync_service.sync_logs(log_address))
@@ -82,3 +82,4 @@ if __name__ == '__main__':
     loop.run_until_complete(
         asyncio.gather(*futures)
     )
+
