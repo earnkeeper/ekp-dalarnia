@@ -34,25 +34,30 @@ class TransactionDecoderService:
     async def decode_trans(self):
         print("✨ Decoding market transactions..")
 
-        latest_block = self.market_transactions_repo.find_latest_block_number()
-        # latest_block = 17032108
+        # The block number from where the relevant transactions start...
+        l_b = self.market_transactions_repo.find_latest_block_number()
+        latest_block = 17032108 if l_b == 0 else l_b
+
+        if self.market_transactions_repo.find_latest_block_number() != 0:
+            latest_block = self.market_transactions_repo.find_latest_block_number() != 0
+
         while True:
 
             next_trans = self.contract_transactions_repo.find_since_block_number(
                 latest_block,
                 self.page_size
             )
-            # print(f'len of trans is {len(next_trans)}')
+
             if not len(next_trans):
                 break
 
             buys = []
 
             for next_tran in next_trans:
-                # abi = await self.etherscan_service.get_abi(address=next_tran['to'])
                 abi_key = f"abi_for_contract_{next_tran['to']}"
                 abi_cached = await self.cache_service.wrap(abi_key,
-                                                           lambda: self.etherscan_service.get_abi(address=next_tran['to'])
+                                                           lambda: self.etherscan_service.get_abi(
+                                                               address=next_tran['to'])
                                                            )
                 func_params = self.web3_service.decode_input(abi_cached, next_tran["input"])
 
@@ -69,17 +74,9 @@ class TransactionDecoderService:
                 buy = await self.__decode_tran(next_tran, func_params)
                 if buy:
                     buys.append(buy)
-                # if input.startswith("0x38edf988"):
-                #     buy = await self.__decode_tran(next_tran)
-                #     if buy:
-                #         buys.append(buy)
 
                 latest_block = block_number
-                # if buy:
-                    # print('here is the buy')
-                    # print(buy)
-            # print('here is the buys')
-            # print(buys)
+
             if len(buys):
                 self.market_transactions_repo.save(buys)
 
@@ -88,7 +85,6 @@ class TransactionDecoderService:
 
         print("✅ Finished decoding market transactions..")
 
-
     async def __decode_tran(self, tran, param_dict):
         if tran['to'] == '':
             # print('🚨 There was no recipient in transaction, so skipped ...')
@@ -96,7 +92,6 @@ class TransactionDecoderService:
         if not param_dict:
             # print('🚨 There was no input in transaction, so skipped ...')
             return None
-        # print(tran['hash'])
         # try:
         descr = self.hist_utils.set_description(param_dict, tran['to'])
         # except KeyError as e:
@@ -104,7 +99,6 @@ class TransactionDecoderService:
         #           f'transaction hash: {tran["hash"]}')
         #     raise Exception(e)
         if descr == '':
-            # print(tran['hash'])
             # print('🚨 There was no description in transaction, so skipped ...')
             return None
 
@@ -120,14 +114,9 @@ class TransactionDecoderService:
                                                                                                         "usd"))
 
         bnb_cost = Web3.fromWei(tran["gasUsed"] * int(tran["gasPrice"]), 'ether')
-        # price = sum(distributions)
-        # fees = price - distributions[-1]
-        # try:
+
         cost_dar, rev_dar = self.hist_utils.calc_cost_and_rev_dar(tran, descr, param_dict)
-        # except KeyError as e:
-        #     print(f'{e}\n'
-        #           f'transaction hash: {tran["hash"]}')
-        #     raise Exception(e)
+
         return {
             "bnbCost": float(bnb_cost) if bnb_cost else None,
             "bnbCostUsd": float(bnb_cost) * bnb_usd_price if bnb_cost else None,
