@@ -35,7 +35,7 @@ class ContractTransactionsRepo:
         )
 
         print(
-            f"⏱  [ContractTransactionsRepo.find_since_block_number({len(results)})] {time.perf_counter() - start:0.3f}s")
+            f"⏱  [ContractTransactionsRepo.find_since_block_number({block_number})] {time.perf_counter() - start:0.3f}s")
 
         return results
 

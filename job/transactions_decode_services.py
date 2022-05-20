@@ -35,13 +35,14 @@ class TransactionDecoderService:
         print("✨ Decoding market transactions..")
 
         latest_block = self.market_transactions_repo.find_latest_block_number()
-
+        # latest_block = 17032108
         while True:
+
             next_trans = self.contract_transactions_repo.find_since_block_number(
                 latest_block,
                 self.page_size
             )
-            print(f'len of trans is {len(next_trans)}')
+            # print(f'len of trans is {len(next_trans)}')
             if not len(next_trans):
                 break
 
@@ -61,6 +62,9 @@ class TransactionDecoderService:
                 if len(input) < 10:
                     latest_block = block_number
                     continue
+                if next_tran["isError"]:
+                    latest_block = block_number
+                    continue
 
                 buy = await self.__decode_tran(next_tran, func_params)
                 if buy:
@@ -71,11 +75,11 @@ class TransactionDecoderService:
                 #         buys.append(buy)
 
                 latest_block = block_number
-
-                print('here is the buy')
-                print(buy)
-            print('here is the buys')
-            print(buys)
+                # if buy:
+                    # print('here is the buy')
+                    # print(buy)
+            # print('here is the buys')
+            # print(buys)
             if len(buys):
                 self.market_transactions_repo.save(buys)
 
@@ -87,11 +91,21 @@ class TransactionDecoderService:
 
     async def __decode_tran(self, tran, param_dict):
         if tran['to'] == '':
+            # print('🚨 There was no recipient in transaction, so skipped ...')
             return None
         if not param_dict:
+            # print('🚨 There was no input in transaction, so skipped ...')
             return None
+        # print(tran['hash'])
+        # try:
         descr = self.hist_utils.set_description(param_dict, tran['to'])
+        # except KeyError as e:
+        #     print(f'{e}\n'
+        #           f'transaction hash: {tran["hash"]}')
+        #     raise Exception(e)
         if descr == '':
+            # print(tran['hash'])
+            # print('🚨 There was no description in transaction, so skipped ...')
             return None
 
         hash = tran["hash"]
@@ -105,18 +119,22 @@ class TransactionDecoderService:
                                                                                                         date_str,
                                                                                                         "usd"))
 
-        bnb_cost = Web3.fromWei(tran["gasUsed"] * tran["gasPrice"], 'ether')
+        bnb_cost = Web3.fromWei(tran["gasUsed"] * int(tran["gasPrice"]), 'ether')
         # price = sum(distributions)
         # fees = price - distributions[-1]
+        # try:
         cost_dar, rev_dar = self.hist_utils.calc_cost_and_rev_dar(tran, descr, param_dict)
-
+        # except KeyError as e:
+        #     print(f'{e}\n'
+        #           f'transaction hash: {tran["hash"]}')
+        #     raise Exception(e)
         return {
-            "bnbCost": float(bnb_cost),
-            "bnbCostUsd": float(bnb_cost) * bnb_usd_price,
-            "darCost": float(cost_dar),
-            "darCostUsd": float(cost_dar) * bnb_usd_price,
-            "darRev": float(rev_dar),
-            "darRevUsd": float(rev_dar) * bnb_usd_price,
+            "bnbCost": float(bnb_cost) if bnb_cost else None,
+            "bnbCostUsd": float(bnb_cost) * bnb_usd_price if bnb_cost else None,
+            "darCost": float(cost_dar) if cost_dar else None,
+            "darCostUsd": float(cost_dar) * bnb_usd_price if cost_dar else None,
+            "darRev": float(rev_dar) if rev_dar else None,
+            "darRevUsd": float(rev_dar) * bnb_usd_price if rev_dar else None,
             "blockNumber": block_number,
             "player_address": tran["from"],
             "description": descr,

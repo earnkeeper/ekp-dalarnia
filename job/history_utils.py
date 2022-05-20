@@ -39,8 +39,11 @@ class PlayerHistory:
     #     return contr_address, func_params
 
     def craft_handler(self, param_dict):
+        # print('recipe_id is:')
+        # print(param_dict['_recipeId'])
         recipe_map = {
             "1001": "Garpen Copper Pick",
+            "1011": "Unknown Armor",
             "1101": "Garpen Copper Armor",
             "1002": "Iron Pick",
             "1102": "Iron Armor",
@@ -48,8 +51,16 @@ class PlayerHistory:
             "1103": "Silver Armor",
             "1004": "Ozymodium Pick",
             "1104": "Ozymodium Armor",
+            "1041": "Unknown Armor 2",
+            "1131": "Unknown Armor 1131",
+            "1005": "Unknown Armor 1005"
         }
+        # try:
+        if str(param_dict['_recipeId']) not in recipe_map.keys():
+            recipe_map[str(param_dict['_recipeId'])] = f'Unknown Armor{param_dict["_recipeId"]}'
         armor = recipe_map[str(param_dict['_recipeId'])]
+        # except KeyError:
+        #     raise Exception({'Recipe Error': f'The recipe with id {param_dict["_recipeId"]} not found'})
         descr = f'Craft 1 x {armor}'
         return descr
 
@@ -83,7 +94,7 @@ class PlayerHistory:
             descr = f'Close Dig & Open Chests'
         elif '_digsToOpen' in param_dict.keys():
             descr = f'Buy 1 x Dig on Plot Id: {param_dict["_tokenId"]}'
-        elif '_recipeId' in param_dict.keys():
+        elif '_recipeId' in param_dict.keys() and '_tokenIds' in param_dict.keys():
             descr = self.craft_handler(param_dict)
         elif 'approved' in param_dict.keys():
             descr = f'Approve DAR for spending on {param_dict["operator"].lower()}'
@@ -93,8 +104,10 @@ class PlayerHistory:
     def calc_cost_and_rev_dar(self, tran, descr, param_dict):
         cost_dar = None
         rev_dar = None
+        # try:
         if 'Market' in descr:
-            last_log_key = max(list(tran['logs'].keys()))
+            log_keys = list(map(int, list(tran['logs'].keys())))
+            last_log_key = str(max(log_keys))
             data = tran['logs'][last_log_key]['data']
             if 'Sell' in descr:
                 rev_dar = int(data[138:202], 16) / 1000000
@@ -106,10 +119,21 @@ class PlayerHistory:
                 cost_dar = int(param_dict['_currentRent']) / 1000000
 
         elif 'Craft' in descr:
-            first_log_key = min(list(tran['logs'].keys()))
+            log_keys = list(map(int, list(tran['logs'].keys())))
+            first_log_key = str(min(log_keys))
             data = tran['logs'][first_log_key]['data']
+            # try:
             cost_dar = int(data[10:74], 16) / 1000000
-
+            # except ValueError as e:
+                # print(tran)
+                # print(list(tran['logs'].keys()))
+                # print(min(list(tran['logs'].keys())))
+                # print(first_log_key)
+                # print(data)
+                # print(tran['hash'])
+                # raise Exception(e)
+        # except KeyError:
+        #     return cost_dar, rev_dar
         return cost_dar, rev_dar
 
 
