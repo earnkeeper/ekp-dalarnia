@@ -1,11 +1,12 @@
 from datetime import datetime
 
-from ekp_sdk.services import (CacheService, CoingeckoService, EtherscanService,
-                              Web3Service)
-from web3 import Web3
 from db.contract_logs_repo import ContractLogsRepo
 from db.contract_transactions_repo import ContractTransactionsRepo
 from db.market_transaction_repo import MarketTransactionsRepo
+from ekp_sdk.services import (CacheService, CoingeckoService, EtherscanService,
+                              Web3Service)
+from web3 import Web3
+
 from job.history_utils import PlayerHistory
 
 
@@ -54,12 +55,29 @@ class TransactionDecoderService:
             buys = []
 
             for next_tran in next_trans:
-                abi_key = f"abi_for_contract_{next_tran['to']}"
-                abi_cached = await self.cache_service.wrap(abi_key,
-                                                           lambda: self.etherscan_service.get_abi(
-                                                               address=next_tran['to'])
-                                                           )
-                func_params = self.web3_service.decode_input(abi_cached, next_tran["input"])
+                to = next_tran['to']
+                if not to:
+                    print(
+                        f'⚠️ Could not parse tran with missing to address: {next_tran["hash"]}'
+                    )
+                    continue
+
+                abi_cache_key = f"abi_for_contract_{next_tran['to']}"
+
+                abi_cached = await self.cache_service.wrap(
+                    abi_cache_key,
+                    lambda: self.etherscan_service.get_abi(address=to)
+                )
+
+                params = self.web3_service.decode_input(
+                    abi_cached, next_tran["input"]
+                )
+
+                if not params:
+                    print(
+                        f'⚠️ Could not parse tran input: {next_tran["hash"]}'
+                    )
+                    continue
 
                 input = next_tran["input"]
                 block_number = next_tran["blockNumber"]
@@ -71,7 +89,8 @@ class TransactionDecoderService:
                     latest_block = block_number
                     continue
 
-                buy = await self.__decode_tran(next_tran, func_params)
+                buy = await self.__decode_tran(next_tran, params)
+
                 if buy:
                     buys.append(buy)
 
@@ -85,21 +104,14 @@ class TransactionDecoderService:
 
         print("✅ Finished decoding market transactions..")
 
-    async def __decode_tran(self, tran, param_dict):
-        if tran['to'] == '':
-            # print('🚨 There was no recipient in transaction, so skipped ...')
-            return None
-        if not param_dict:
-            # print('🚨 There was no input in transaction, so skipped ...')
-            return None
-        # try:
-        descr = self.hist_utils.set_description(param_dict, tran['to'])
-        # except KeyError as e:
-        #     print(f'{e}\n'
-        #           f'transaction hash: {tran["hash"]}')
-        #     raise Exception(e)
-        if descr == '':
-            # print('🚨 There was no description in transaction, so skipped ...')
+    async def __decode_tran(self, tran, params):
+        to = tran['to']
+
+        description = self.hist_utils.set_description(params, to)
+
+        if not description:
+            print(
+                f'⚠️ Could not parse description in transactions {tran["hash"]}')
             return None
 
         hash = tran["hash"]
@@ -108,14 +120,20 @@ class TransactionDecoderService:
         date_str = datetime.utcfromtimestamp(timestamp).strftime("%d-%m-%Y")
 
         bnb_cache_key = f"bnb_price_{date_str}"
-        bnb_usd_price = await self.cache_service.wrap(bnb_cache_key,
-                                                      lambda: self.coingecko_service.get_historic_price("binancecoin",
-                                                                                                        date_str,
-                                                                                                        "usd"))
+        bnb_usd_price = await self.cache_service.wrap(
+            bnb_cache_key,
+            lambda: self.coingecko_service.get_historic_price(
+                "binancecoin",
+                date_str,
+                "usd"
+            )
+        )
 
-        bnb_cost = Web3.fromWei(tran["gasUsed"] * int(tran["gasPrice"]), 'ether')
+        bnb_cost = Web3.fromWei(
+            tran["gasUsed"] * int(tran["gasPrice"]), 'ether')
 
-        cost_dar, rev_dar = self.hist_utils.calc_cost_and_rev_dar(tran, descr, param_dict)
+        cost_dar, rev_dar = self.hist_utils.calc_cost_and_rev_dar(
+            tran, description, params)
 
         return {
             "bnbCost": float(bnb_cost) if bnb_cost else None,
@@ -126,7 +144,7 @@ class TransactionDecoderService:
             "darRevUsd": float(rev_dar) * bnb_usd_price if rev_dar else None,
             "blockNumber": block_number,
             "player_address": tran["from"],
-            "description": descr,
+            "description": description,
             "hash": hash,
             "timestamp": timestamp,
         }

@@ -14,7 +14,6 @@ class PlayerHistory:
         self.etherscan_service = etherscan_service
         self.web3_service = web3_service
 
-
     def craft_handler(self, param_dict):
         recipe_map = {
             "1001": "Garpen Copper Pick",
@@ -26,9 +25,9 @@ class PlayerHistory:
             "1004": "Ozymodium Pick",
             "1104": "Ozymodium Armor",
         }
-        # try:
         if str(param_dict['_recipeId']) not in recipe_map.keys():
-            recipe_map[str(param_dict['_recipeId'])] = f'Unknown Armor {param_dict["_recipeId"]}'
+            recipe_map[str(param_dict['_recipeId'])
+                       ] = f'Unknown Armor {param_dict["_recipeId"]}'
         armor = recipe_map[str(param_dict['_recipeId'])]
         descr = f'Craft 1 x {armor}'
         return descr
@@ -52,13 +51,21 @@ class PlayerHistory:
         return descr
 
     def set_description(self, param_dict, contract):
-        descr = ''
+        descr = None
         if '_resourceIn' in param_dict.keys():
-            descr = self.swap_handler(param_dict=param_dict, contract=contract,
-                                 buy_key='_resourceOut', sell_key='_resourceIn')
+            descr = self.swap_handler(
+                param_dict=param_dict,
+                contract=contract,
+                buy_key='_resourceOut',
+                sell_key='_resourceIn'
+            )
         elif '_stableIdFrom' in param_dict.keys():
-            descr = self.swap_handler(param_dict=param_dict, contract=contract,
-                                 buy_key='_stableIdTo', sell_key='_stableIdFrom')
+            descr = self.swap_handler(
+                param_dict=param_dict,
+                contract=contract,
+                buy_key='_stableIdTo',
+                sell_key='_stableIdFrom'
+            )
         elif '_digsToClose' in param_dict.keys():
             descr = f'Close Dig & Open Chests'
         elif '_digsToOpen' in param_dict.keys():
