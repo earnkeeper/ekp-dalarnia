@@ -28,3 +28,5 @@ spec:
                   value: "{{ .Values.etherscan.baseUrl }}"
                 - name: WEB3_PROVIDER_URL
                   value: "{{ .Values.web3.providerUrl }}"
+                - name: REDIS_URI
+                  value: 'redis://{{ .Release.Name }}-redis-master'
