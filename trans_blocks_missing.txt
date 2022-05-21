@@ -11,3 +11,5 @@ Transaction with block number 12355863 is skipped
 Transaction with block number 12355864 is skipped
 Transaction with block number 12356626 is skipped
 Transaction with block number 12356627 is skipped
+Transaction with block number 12355171 is skipped
+Transaction with block number 12355270 is skipped

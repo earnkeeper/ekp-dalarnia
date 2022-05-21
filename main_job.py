@@ -65,39 +65,38 @@ if __name__ == '__main__':
     loop = asyncio.get_event_loop()
 
     contract_addresses = [
-        '0x2e0058951ded269e33f776c8ea44136803b23a88',
-        '0x92fe453dd29ceb6c631cb06ccec50f23e1220d14',
-        '0xc4ea71878a4f1d92215e2ed680e325966ab6e1eb',
-        '0x96dfbd2c945bca02378ffd8e4593054d098e8bac',
-        '0xca9160f5637d7160168ee2064741e17cc31a0d29',
-        '0x23ce9e926048273ef83be0a3a8ba9cb6d45cd978',
-        '0xa1cb40dcd114a06bc484880c1cf57a6b1b42950b',
-        '0x3c45e5c77cc40eb51eaa5e85c1a9b30a43764ca9'
+        '0x2e0058951ded269e33f776c8ea44136803b23a88',  # PlanetPlotHandler
+        '0x92fe453dd29ceb6c631cb06ccec50f23e1220d14',  # Pair
+        '0xc4ea71878a4f1d92215e2ed680e325966ab6e1eb',  # ResourcesHandler
+        '0x96dfbd2c945bca02378ffd8e4593054d098e8bac',  # Pair
+        '0xca9160f5637d7160168ee2064741e17cc31a0d29',  # Pair
+        '0x23ce9e926048273ef83be0a3a8ba9cb6d45cd978',  # BEP20Token
+        '0xa1cb40dcd114a06bc484880c1cf57a6b1b42950b',  # Items
+        '0x3c45e5c77cc40eb51eaa5e85c1a9b30a43764ca9'  # Resources
     ]
 
     log_addresses = [
-        '0x2e0058951ded269e33f776c8ea44136803b23a88',
-        '0x92fe453dd29ceb6c631cb06ccec50f23e1220d14',
-        '0xc4ea71878a4f1d92215e2ed680e325966ab6e1eb',
-        '0x96dfbd2c945bca02378ffd8e4593054d098e8bac',
-        '0xca9160f5637d7160168ee2064741e17cc31a0d29',
-        '0x23ce9e926048273ef83be0a3a8ba9cb6d45cd978',
-        '0xa1cb40dcd114a06bc484880c1cf57a6b1b42950b',
-        '0x3c45e5c77cc40eb51eaa5e85c1a9b30a43764ca9'
+        '0x2e0058951ded269e33f776c8ea44136803b23a88',  # PlanetPlotHandler
+        '0x92fe453dd29ceb6c631cb06ccec50f23e1220d14',  # Pair
+        '0xc4ea71878a4f1d92215e2ed680e325966ab6e1eb',  # ResourcesHandler
+        '0x96dfbd2c945bca02378ffd8e4593054d098e8bac',  # Pair
+        '0xca9160f5637d7160168ee2064741e17cc31a0d29',  # Pair
+        '0x23ce9e926048273ef83be0a3a8ba9cb6d45cd978',  # BEP20Token
+        '0xa1cb40dcd114a06bc484880c1cf57a6b1b42950b',  # Items
+        '0x3c45e5c77cc40eb51eaa5e85c1a9b30a43764ca9'  # Resources
     ]
 
     futures = []
 
+    start_block = 17573419 # This is where the market pairs opened
+
     for contract_address in contract_addresses:
         futures.append(
-            container.sync_service.sync_transactions(contract_address))
+            container.sync_service.sync_transactions(contract_address, start_block)
+        )
 
     for log_address in log_addresses:
-        futures.append(container.sync_service.sync_logs(log_address))
-
-    loop.run_until_complete(
-        container.market_decoder_service.decode_trans()
-    )
+        futures.append(container.sync_service.sync_logs(log_address, start_block))
 
     loop.run_until_complete(
         asyncio.gather(*futures)

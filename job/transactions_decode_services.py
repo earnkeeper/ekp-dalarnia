@@ -111,8 +111,13 @@ class TransactionDecoderService:
 
         if not description:
             print(
-                f'⚠️ Could not parse description in transactions {tran["hash"]}')
+                f'⚠️ Could not parse description in transaction {tran["hash"]}'
+            )
             return None
+
+        print(
+            f'✅ Parsed description in transactions {tran["hash"]}'
+        )
 
         hash = tran["hash"]
         timestamp = tran["timeStamp"]
@@ -133,7 +138,10 @@ class TransactionDecoderService:
             tran["gasUsed"] * int(tran["gasPrice"]), 'ether')
 
         cost_dar, rev_dar = self.hist_utils.calc_cost_and_rev_dar(
-            tran, description, params)
+            tran,
+            description,
+            params
+        )
 
         return {
             "bnbCost": float(bnb_cost) if bnb_cost else None,

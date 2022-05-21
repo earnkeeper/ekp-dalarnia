@@ -2,9 +2,9 @@ import sys
 from ast import literal_eval
 from collections import Counter
 
+from db.contract_logs_repo import ContractLogsRepo
 from db.contract_transactions_repo import ContractTransactionsRepo
 from ekp_sdk.services import EtherscanService
-from db.contract_logs_repo import ContractLogsRepo
 
 
 def handle_0x(log_item):
@@ -13,6 +13,7 @@ def handle_0x(log_item):
     else:
         log_item = literal_eval(log_item)
     return log_item
+
 
 class TransactionSyncService:
     def __init__(
@@ -26,44 +27,32 @@ class TransactionSyncService:
         self.etherscan_service = etherscan_service
         self.page_size = 1000
 
-    async def sync_transactions(self, contract_address):
-        start_block = 0
+    async def sync_transactions(self, contract_address, start_block_number=0):
+
+        latest_block_number = await self.etherscan_service.get_latest_block_number()
 
         latest_transaction = self.contract_transactions_repo.get_latest(
             contract_address
         )
 
         if latest_transaction is not None and len(latest_transaction):
-            start_block = latest_transaction[0]["blockNumber"]
+            start_block_number = latest_transaction[0]["blockNumber"]
+
+        original_start_block = start_block_number
 
         while True:
-            # if start_block in [12355171, 12355172]:
-            #     start_block = 12355175
-            trans = await self.etherscan_service.get_transactions(contract_address, start_block, self.page_size)
-
-            c = Counter(t['blockNumber'] for t in trans)
-            # print(c)
-            if 1000 in c.values():
-                stdoutOrigin = sys.stdout
-                sys.stdout = open(f"trans_blocks_missing.txt", "a")
-                print(f'Transaction with block number {start_block} is skipped')
-                sys.stdout.close()
-                sys.stdout = stdoutOrigin
-                start_block = start_block + 1
-                continue
+            trans = await self.etherscan_service.get_transactions(contract_address, start_block_number, self.page_size)
 
             if len(trans) == 0:
                 break
-
-            print(f"Retrieved {len(trans)} trans from the api, saving to db...")
 
             models = []
 
             for tran in trans:
                 block_number = int(tran["blockNumber"])
 
-                if block_number > start_block:
-                    start_block = block_number
+                if block_number > start_block_number:
+                    start_block_number = block_number
 
                 tran["blockNumber"] = block_number
                 tran["source_contract_address"] = contract_address
@@ -79,40 +68,33 @@ class TransactionSyncService:
 
             self.contract_transactions_repo.save(models)
 
+            pc_complete = round(
+                (block_number - original_start_block) * 100 /
+                (latest_block_number - original_start_block),
+                1
+            )
+
+            print(
+                f"🐛 [Transaction Sync] - [{contract_address}] - {block_number} / {latest_block_number} ({pc_complete} %)"
+            )
+
             if (len(trans) < self.page_size):
                 break
 
-    async def sync_logs(self, log_address):
-        start_block = 0
+    async def sync_logs(self, log_address, start_block_number):
+        latest_block_number = await self.etherscan_service.get_latest_block_number()
 
         latest_log = self.contract_logs_repo.get_latest(
             log_address
         )
 
         if latest_log is not None and len(latest_log):
-            start_block = latest_log[0]["blockNumber"]
-
+            start_block_number = latest_log[0]["blockNumber"]
+            
+        original_start_block = start_block_number
+        
         while True:
-            # print(start_block)
-            # print(type(start_block))
-            # if start_block in [12355171, 12355172, 12355244]:
-            #     start_block = start_block + 1
-            # start_block = hex(start_block)
-
-            # start_block = 17691873
-            # print(f'start_block after is {start_block}')
-            # print(f'start_block type after is {type(start_block)}')
-            logs = await self.etherscan_service.get_logs(log_address, start_block)
-
-            c = Counter(l['blockNumber'] for l in logs)
-            if 1000 in c.values():
-                stdoutOrigin = sys.stdout
-                sys.stdout = open(f"logs_blocks_missing.txt", "a")
-                print(f'Log with block number {start_block} and address {log_address} is skipped')
-                sys.stdout.close()
-                sys.stdout = stdoutOrigin
-                start_block = start_block + 1
-                continue
+            logs = await self.etherscan_service.get_logs(log_address, start_block_number)
 
             if len(logs) == 0:
                 break
@@ -122,27 +104,42 @@ class TransactionSyncService:
             models = []
 
             for log in logs:
-                # print(f'Here we are fetching the logs for the address {log["address"]}')
                 block_number = literal_eval(log["blockNumber"])
 
-                if block_number > start_block:
-                    start_block = block_number
-                # print(log["gasUsed"])
-                log["blockNumber"] = block_number
-                log["gasUsed"] = handle_0x(log["gasUsed"])
-                log["gasPrice"] = handle_0x(log["gasPrice"])
-                log["timeStamp"] = handle_0x(log["timeStamp"])
-                # log["gasUsed"] = literal_eval(log["gasUsed"])
-                # log["gasPrice"] = literal_eval(log["gasPrice"])
-                # log["timeStamp"] = literal_eval(log["timeStamp"])
-                log["logIndex"] = handle_0x(log["logIndex"])
-                log["transactionIndex"] = handle_0x(log["transactionIndex"])
+                if block_number > start_block_number:
+                    start_block_number = block_number
 
+                log["blockNumber"] = block_number
+                log["gasUsed"] = literal_eval(log["gasUsed"])
+                log["gasPrice"] = literal_eval(log["gasPrice"])
+                log["timeStamp"] = literal_eval(log["timeStamp"])
+
+                if (log["logIndex"] == "0x"):
+                    log["logIndex"] = 0
+                else:
+                    log["logIndex"] = literal_eval(log["logIndex"])
+
+                if (log["transactionIndex"] == "0x"):
+                    log["transactionIndex"] = 0
+                else:
+                    log["transactionIndex"] = literal_eval(
+                        log["transactionIndex"])
 
                 models.append(log)
 
             self.contract_logs_repo.save(models)
             self.contract_transactions_repo.save_logs(models)
+            
+            pc_complete = round(
+                (block_number - original_start_block) * 100 /
+                (latest_block_number - original_start_block),
+                1
+            )
+
+            print(
+                f"🐛 [Log Sync] - {log_address} - {block_number} / {latest_block_number} ({pc_complete} %)"
+            )
+            
 
             if (len(logs) < 1000):
                 break
