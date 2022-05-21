@@ -19,9 +19,9 @@ class AppContainer(BaseContainer):
         )
 
         self.hist_utils = PlayerHistory(
+            contract_transactions_repo=self.contract_transactions_repo,
             etherscan_service=self.etherscan_service,
             web3_service=self.web3_service,
-            contract_transactions_repo=self.contract_transactions_repo
         )
 
         self.market_decoder_service = TransactionDecoderService(
@@ -30,9 +30,9 @@ class AppContainer(BaseContainer):
             contract_logs_repo=self.contract_logs_repo,
             contract_transactions_repo=self.contract_transactions_repo,
             etherscan_service=self.etherscan_service,
+            hist_utils=self.hist_utils,
             market_transactions_repo=self.market_transactions_repo,
             web3_service=self.web3_service,
-            hist_utils=self.hist_utils
         )
 
 
