@@ -1,11 +1,12 @@
 from ekp_sdk.db import MgClient
 from pymongo import DESCENDING, UpdateOne
+import time
 
 
 class ContractLogsRepo:
     def __init__(
-        self,
-        mg_client: MgClient
+            self,
+            mg_client: MgClient
     ):
         self.mg_client = mg_client
 
@@ -20,12 +21,15 @@ class ContractLogsRepo:
             self.collection.find(
                 {"address": address}
             )
-            .sort("blockNumber", -1)
-            .limit(1)
+                .sort("blockNumber", -1)
+                .limit(1)
         )
 
-    def bulk_write(self, logs):
+    def save(self, logs):
+        start = time.perf_counter()
+
         self.collection.bulk_write(
             list(map(lambda log: UpdateOne({"transactionHash": log["transactionHash"]}, {"$set": log}, True), logs))
         )
-        
+
+        print(f"⏱  [ContractLogsRepo.save({len(logs)})] {time.perf_counter() - start:0.3f}s")

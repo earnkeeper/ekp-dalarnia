@@ -168,3 +168,7 @@ nodemon.json
 .werf_secret_key
 .secrets
 clear-values.yaml
+
+parse_trans.py
+player_history.py
+testing.py
