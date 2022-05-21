@@ -3,11 +3,8 @@ import asyncio
 from decouple import AutoConfig
 from ekp_sdk import BaseContainer
 
-from db.contract_logs_repo import ContractLogsRepo
-from db.contract_transactions_repo import ContractTransactionsRepo
 from db.market_transaction_repo import MarketTransactionsRepo
 from job.history_utils import PlayerHistory
-from job.transaction_sync_service import TransactionSyncService
 from job.transactions_decode_services import TransactionDecoderService
 
 
@@ -17,26 +14,8 @@ class AppContainer(BaseContainer):
 
         super().__init__(config)
 
-        self.contract_transactions_repo = ContractTransactionsRepo(
-            mg_client=self.mg_client,
-        )
-
-        self.contract_logs_repo = ContractLogsRepo(
-            mg_client=self.mg_client,
-        )
-
-        self.contract_logs_repo = ContractLogsRepo(
-            mg_client=self.mg_client,
-        )
-
         self.market_transactions_repo = MarketTransactionsRepo(
             mg_client=self.mg_client,
-        )
-
-        self.sync_service = TransactionSyncService(
-            contract_logs_repo=self.contract_logs_repo,
-            contract_transactions_repo=self.contract_transactions_repo,
-            etherscan_service=self.etherscan_service
         )
 
         self.hist_utils = PlayerHistory(
@@ -88,15 +67,17 @@ if __name__ == '__main__':
 
     futures = []
 
-    start_block = 17573419 # This is where the market pairs opened
+    start_block = 17573419  # This is where the market pairs opened
 
     for contract_address in contract_addresses:
         futures.append(
-            container.sync_service.sync_transactions(contract_address, start_block)
+            container.transaction_sync_service.sync_transactions(
+                contract_address, start_block)
         )
 
     for log_address in log_addresses:
-        futures.append(container.sync_service.sync_logs(log_address, start_block))
+        futures.append(container.transaction_sync_service.sync_logs(
+            log_address, start_block))
 
     loop.run_until_complete(
         asyncio.gather(*futures)

@@ -1,4 +1,4 @@
-from db.contract_transactions_repo import ContractTransactionsRepo
+from ekp_sdk.db import ContractTransactionsRepo
 from ekp_sdk.services import EtherscanService, Web3Service
 
 

@@ -1,8 +1,7 @@
 from datetime import datetime
 
-from db.contract_logs_repo import ContractLogsRepo
-from db.contract_transactions_repo import ContractTransactionsRepo
 from db.market_transaction_repo import MarketTransactionsRepo
+from ekp_sdk.db import ContractLogsRepo, ContractTransactionsRepo
 from ekp_sdk.services import (CacheService, CoingeckoService, EtherscanService,
                               Web3Service)
 from web3 import Web3
