@@ -1,12 +1,11 @@
 import asyncio
-from re import A
 
 from decouple import AutoConfig
 from ekp_sdk import BaseContainer
 
 from db.dalarnia_transactions_repo import MarketTransactionsRepo
-from job.history_utils import PlayerHistory
-from job.transactions_decode_services import TransactionDecoderService
+from sync.history_utils import PlayerHistory
+from sync.transactions_decode_services import TransactionDecoderService
 
 
 class AppContainer(BaseContainer):
