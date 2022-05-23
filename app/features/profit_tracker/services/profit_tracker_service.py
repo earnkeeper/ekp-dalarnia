@@ -12,34 +12,34 @@ class ProfitTrackerService:
         self.coingecko_service = coingecko_service
 
     async def get_documents(self, currency):
-        return []
-        # rate = await self.coingecko_service.get_latest_price('usd-coin', currency["id"])
+        # return []
+        rate = await self.coingecko_service.get_latest_price('usd-coin', currency["id"])
         #
-        # models = self.market_transactions_repo.find_all(1000)
+        models = self.market_transactions_repo.find_all(1000)
         #
-        # documents = []
+        documents = []
         #
-        # for model in models:
-        #     document = self.map_document(model, currency, rate)
-        #     documents.append(document)
+        for model in models:
+            document = self.map_document(model, currency, rate)
+            documents.append(document)
         #
-        # return documents
+        return documents
 
     def map_document(self, model, currency, rate):
 
         model: TrackerTransactionDocument = {
-            "cost_bnb": model["cost_bnb"],
-            "cost_bnb_fiat": model["cost_bnb_fiat"],
-            "cost_dar": model["cost_dar"],
-            "cost_dar_fiat": model["cost_dar_fiat"],
+            "cost_bnb": model["bnbCost"],
+            "cost_bnb_fiat": model["bnbCostUsd"],
+            "cost_dar": model["darCost"],
+            "cost_dar_fiat": model["darCostUsd"],
             "description": model["description"],
-            "fiat_symbol": model["fiat_symbol"],
-            "id": model["id"],
-            "darRev": model["revenue_dar"],
-            "darRevUsd": model["revenue_dar_fiat"],
+            "fiat_symbol": "",
+            "id": "",
+            "darRev": model["darRev"],
+            "darRevUsd": model["darRevUsd"],
             "timestamp": model["timestamp"],
-            "transaction_hash": model["transaction_hash"],
-            "updated": model["updated"],
+            "transaction_hash": model["hash"],
+            "updated": "",
         }
 
         return model

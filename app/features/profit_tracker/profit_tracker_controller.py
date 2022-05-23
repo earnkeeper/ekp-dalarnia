@@ -25,19 +25,19 @@ class ProfitTrackerController:
     ):
         self.client_service = client_service
         self.profit_tracker_service = profit_tracker_service
-        self.path = 'marketplace'
+        self.path = 'profit_tracker'
 
     async def on_connect(self, sid):
         await self.client_service.emit_menu(
             sid,
             'cil-cart',
-            'Marketplace',
+            'Profit Tracker',
             self.path
         )
         await self.client_service.emit_page(
             sid,
             self.path,
-            page()
+            page(PLAYERS_HISTORY_COLLECTION_NAME)
         )
 
     async def on_client_state_changed(self, sid, event):
