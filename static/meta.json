@@ -1,0 +1,10 @@
+{
+  "id": "dalarnia-marketplace",
+  "gameId": "dalarnia",
+  "name": "Marketplace",
+  "github": "https://github.com/earnkeeper/ekp-dalarnia",
+  "image": "/static/market.jpg",
+  "mainPage": "marketplace",
+  "description": "Preview the Enhanced Dalarnia Marketplace before official release..",
+  "features": ["Enhanced Marketplace"]
+}

@@ -12,7 +12,7 @@ class MarketTransactionsRepo:
     ):
         self.mg_client = mg_client
 
-        self.collection = self.mg_client.db['dalarnia_transactions']
+        self.collection = self.mg_client.db['market_transactions']
         self.collection.create_index("hash", unique=True)
         self.collection.create_index("blockNumber")
         self.collection.create_index("player_address")
