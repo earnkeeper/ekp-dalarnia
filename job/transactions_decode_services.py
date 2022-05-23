@@ -1,6 +1,7 @@
 from datetime import datetime
+from db.dalarnia_transaction_model import DalarniaTransactionModel
 
-from db.market_transaction_repo import MarketTransactionsRepo
+from db.dalarnia_transactions_repo import MarketTransactionsRepo
 from ekp_sdk.db import ContractLogsRepo, ContractTransactionsRepo
 from ekp_sdk.services import (CacheService, CoingeckoService, EtherscanService,
                               Web3Service)
@@ -142,7 +143,7 @@ class TransactionDecoderService:
             params
         )
 
-        return {
+        model: DalarniaTransactionModel = {
             "bnbCost": float(bnb_cost) if bnb_cost else None,
             "bnbCostUsd": float(bnb_cost) * bnb_usd_price if bnb_cost else None,
             "darCost": float(cost_dar) if cost_dar else None,
@@ -155,3 +156,5 @@ class TransactionDecoderService:
             "hash": hash,
             "timestamp": timestamp,
         }
+        
+        return model

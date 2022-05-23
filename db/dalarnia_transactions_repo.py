@@ -1,22 +1,55 @@
 from ekp_sdk.db import MgClient
-from pymongo import DESCENDING, UpdateOne
+from pymongo import UpdateOne
+import time
+from decimal import Decimal
+from bson.decimal128 import Decimal128
 
 
-class DalarniaTransactionsRepo:
+class MarketTransactionsRepo:
     def __init__(
-        self,
-        mg_client: MgClient
+            self,
+            mg_client: MgClient
     ):
         self.mg_client = mg_client
 
         self.collection = self.mg_client.db['dalarnia_transactions']
         self.collection.create_index("hash", unique=True)
-        self.collection.create_index([("blockNumber", DESCENDING)])
-        self.collection.create_index([("timestamp", DESCENDING)])
-        self.collection.create_index("playerAddress")
+        self.collection.create_index("blockNumber")
+        self.collection.create_index("player_address")
+        self.collection.create_index("timestamp")
 
-    def bulk_write(self, trans):
+    def find_all(self, limit):
+        start = time.perf_counter()
+
+        results = list(
+            self.collection
+                .find()
+                .sort("timestamp")
+                .limit(limit)
+        )
+
+        print(f"⏱  [MarketTransactionsRepo.find_all({len(results)})] {time.perf_counter() - start:0.3f}s")
+
+        return results
+
+    def find_latest_block_number(self):
+        results = list(
+            self.collection
+                .find()
+                .sort("blockNumber", -1)
+                .limit(1)
+        )
+
+        if not len(results):
+            return 0
+
+        return results[0]["blockNumber"]
+
+    def save(self, trans):
+        start = time.perf_counter()
+
         self.collection.bulk_write(
             list(map(lambda tran: UpdateOne({"hash": tran["hash"]}, {"$set": tran}, True), trans))
         )
-        
+
+        print(f"⏱  [MarketTransactionsRepo.save({len(trans)})] {time.perf_counter() - start:0.3f}s")

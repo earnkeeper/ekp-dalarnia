@@ -1,9 +1,10 @@
 import asyncio
+from re import A
 
 from decouple import AutoConfig
 from ekp_sdk import BaseContainer
 
-from db.market_transaction_repo import MarketTransactionsRepo
+from db.dalarnia_transactions_repo import MarketTransactionsRepo
 from job.history_utils import PlayerHistory
 from job.transactions_decode_services import TransactionDecoderService
 
@@ -72,12 +73,18 @@ if __name__ == '__main__':
     for contract_address in contract_addresses:
         futures.append(
             container.transaction_sync_service.sync_transactions(
-                contract_address, start_block)
+                contract_address,
+                start_block
+            )
         )
 
     for log_address in log_addresses:
-        futures.append(container.transaction_sync_service.sync_logs(
-            log_address, start_block))
+        futures.append(
+            container.transaction_sync_service.sync_logs(
+                log_address,
+                start_block
+            )
+        )
 
     loop.run_until_complete(
         asyncio.gather(*futures)
