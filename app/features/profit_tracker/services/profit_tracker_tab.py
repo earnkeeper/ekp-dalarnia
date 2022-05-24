@@ -9,7 +9,7 @@ from ekp_sdk.ui import (Col, Column, Container, Datatable, Div, Image, Link,
 def history_page(HISTORY_COLLECTION_NAME):
     return Container([
         Paragraphs(["Browse the last 1000 sales from the market place right here.",
-                   "Check out our discord for real time notifications of new listings"]),
+                    "Check out our discord for real time notifications of new listings"]),
         Div([], class_name="mb-2"),
         table_row(HISTORY_COLLECTION_NAME)
     ])
@@ -29,13 +29,13 @@ def table_row(HISTORY_COLLECTION_NAME):
                 id="timestamp",
                 sortable=True,
                 cell=timestamp_cell(),
-                width="120px"
+                width="200px"
             ),
             Column(
                 id="description",
                 sortable=True,
                 cell=description_cell(),
-                width="100px",
+                min_width="400px"
             ),
             Column(
                 id="cost_bnb",
@@ -64,26 +64,27 @@ def table_row(HISTORY_COLLECTION_NAME):
     )
 
 
+def format_datetime(value):
+    return {
+        "method": "formatDatetime",
+        "params": [value]
+    }
+
+
 def timestamp_cell():
     return Row([
         Col(
-            class_name="col-12",
+            class_name="my-auto col-auto pr-0",
             children=[
                 Span(format_age("$.timestamp"))
             ]
         ),
         Col(
-            class_name="col-12",
+            class_name="my-auto col-auto pr-0",
             children=[
-                Link(
-                    class_name="font-small-1",
-                    href=format_template(
-                        "https://bscscan.com/tx/{{ hash }}", {"hash": "$.hash"}),
-                    external=True,
-                    content=format_mask_address("$.hash")
-                )
+                Span(format_datetime("$.timestamp"))
             ]
-        )
+        ),
     ])
 
 
@@ -102,7 +103,7 @@ def description_cell():
                 class_name="col-12",
                 children=[
                     Span(
-                        "$.hash"
+                        format_mask_address("$.transaction_hash")
                     )
                 ]
             )
