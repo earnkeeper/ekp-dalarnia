@@ -1,13 +1,13 @@
 from datetime import datetime
 from db.dalarnia_transaction_model import DalarniaTransactionModel
 
-from db.dalarnia_transactions_repo import MarketTransactionsRepo
+from db.dalarnia_transactions_repo import DalarniaTransactionsRepo
 from ekp_sdk.db import ContractLogsRepo, ContractTransactionsRepo
 from ekp_sdk.services import (CacheService, CoingeckoService, EtherscanService,
                               Web3Service)
 from web3 import Web3
 
-from job.history_utils import PlayerHistory
+from sync.history_utils import PlayerHistory
 
 
 class TransactionDecoderService:
@@ -17,7 +17,7 @@ class TransactionDecoderService:
             coingecko_service: CoingeckoService,
             contract_logs_repo: ContractLogsRepo,
             contract_transactions_repo: ContractTransactionsRepo,
-            market_transactions_repo: MarketTransactionsRepo,
+            market_transactions_repo: DalarniaTransactionsRepo,
             etherscan_service: EtherscanService,
             web3_service: Web3Service,
             hist_utils: PlayerHistory

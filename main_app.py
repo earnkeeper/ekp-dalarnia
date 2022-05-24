@@ -11,7 +11,7 @@ from app.features.profit_tracker.services.summary.players_summary_service import
 # from app.features.market.boxes.listings.boxes_listings_service import BoxesListingsService
 # from app.features.market.boxes.boxes_summary_service import BoxesSummaryService
 # from db.dalarnia_transactions_repo import BoxOpensRepo
-from db.dalarnia_transactions_repo import MarketTransactionsRepo
+from db.dalarnia_transactions_repo import DalarniaTransactionsRepo
 
 
 class AppContainer(BaseContainer):
@@ -26,7 +26,7 @@ class AppContainer(BaseContainer):
         #     mg_client=self.mg_client,
         # )
 
-        self.market_transactions_repo = MarketTransactionsRepo(
+        self.market_transactions_repo = DalarniaTransactionsRepo(
             mg_client=self.mg_client,
         )
 
@@ -47,7 +47,7 @@ class AppContainer(BaseContainer):
         # )
 
         self.player_summary_service = PlayersSummaryService(
-            market_transactions_repo=self.market_transactions_repo,
+            dalarnia_transactions_repo=self.market_transactions_repo,
             coingecko_service=self.coingecko_service
         )
 

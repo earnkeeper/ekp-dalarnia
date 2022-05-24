@@ -5,7 +5,7 @@ from decimal import Decimal
 from bson.decimal128 import Decimal128
 
 
-class MarketTransactionsRepo:
+class DalarniaTransactionsRepo:
     def __init__(
             self,
             mg_client: MgClient
@@ -23,21 +23,41 @@ class MarketTransactionsRepo:
 
         results = list(
             self.collection
-                .find()
-                .sort("timestamp")
-                .limit(limit)
+            .find()
+            .sort("timestamp")
+            .limit(limit)
         )
 
-        print(f"⏱  [MarketTransactionsRepo.find_all({len(results)})] {time.perf_counter() - start:0.3f}s")
+        print(
+            f"⏱  [MarketTransactionsRepo.find_all({len(results)})] {time.perf_counter() - start:0.3f}s")
 
         return results
+
+    def filter_and_sum(self, field_name):
+        result = list(
+            self.collection.aggregate(
+                [
+                    {
+                        "$group":
+                        {
+                            "_id": None,
+                            "total": {"$sum": f"${field_name}"}
+                        }
+                    }
+                ])
+        )
+
+        if not len(result):
+            return None
+
+        return result[0]
 
     def find_latest_block_number(self):
         results = list(
             self.collection
-                .find()
-                .sort("blockNumber", -1)
-                .limit(1)
+            .find()
+            .sort("blockNumber", -1)
+            .limit(1)
         )
 
         if not len(results):
@@ -49,7 +69,9 @@ class MarketTransactionsRepo:
         start = time.perf_counter()
 
         self.collection.bulk_write(
-            list(map(lambda tran: UpdateOne({"hash": tran["hash"]}, {"$set": tran}, True), trans))
+            list(map(lambda tran: UpdateOne(
+                {"hash": tran["hash"]}, {"$set": tran}, True), trans))
         )
 
-        print(f"⏱  [MarketTransactionsRepo.save({len(trans)})] {time.perf_counter() - start:0.3f}s")
+        print(
+            f"⏱  [MarketTransactionsRepo.save({len(trans)})] {time.perf_counter() - start:0.3f}s")

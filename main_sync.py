@@ -3,7 +3,7 @@ import asyncio
 from decouple import AutoConfig
 from ekp_sdk import BaseContainer
 
-from db.dalarnia_transactions_repo import MarketTransactionsRepo
+from db.dalarnia_transactions_repo import DalarniaTransactionsRepo
 from sync.history_utils import PlayerHistory
 from sync.transactions_decode_services import TransactionDecoderService
 
@@ -14,7 +14,7 @@ class AppContainer(BaseContainer):
 
         super().__init__(config)
 
-        self.market_transactions_repo = MarketTransactionsRepo(
+        self.market_transactions_repo = DalarniaTransactionsRepo(
             mg_client=self.mg_client,
         )
 

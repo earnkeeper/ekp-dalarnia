@@ -1,4 +1,4 @@
-from app.features.profit_tracker.services.profit_tracker_tab import history_page
+from app.features.profit_tracker.services.profit_tracker_tab import profit_tracker_tab
 # from app.features.market.boxes.listings.boxes_listings_tab import listings_page
 # from app.utils.game_constants import HERO_BOX_NAME_IMAGE
 from ekp_sdk.util.clean_null_terms import clean_null_terms
@@ -12,7 +12,7 @@ def page(HISTORY_COLLECTION_NAME, SUMMARY_COLLECTION_NAME):
         children=[
             page_title('shopping-cart', 'Player Profit and Loss'),
             summary_row(SUMMARY_COLLECTION_NAME),
-            tabs_row(HISTORY_COLLECTION_NAME),
+            profit_tracker_tab(HISTORY_COLLECTION_NAME)
         ]
     )
 
@@ -73,13 +73,3 @@ def summary_card(boxId):
     )
 
 
-def tabs_row(HISTORY_COLLECTION_NAME):
-    return Tabs(
-        [
-            Tab(
-                label="History",
-                children=[history_page(HISTORY_COLLECTION_NAME)]
-            ),
-        ]
-    )
-    # return []

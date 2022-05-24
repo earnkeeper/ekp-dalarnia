@@ -6,7 +6,7 @@ from ekp_sdk.ui import (Col, Column, Container, Datatable, Div, Image, Link,
                         format_template, is_busy, switch_case)
 
 
-def history_page(HISTORY_COLLECTION_NAME):
+def profit_tracker_tab(HISTORY_COLLECTION_NAME):
     return Container([
         Paragraphs(["Browse the last 1000 sales from the market place right here.",
                     "Check out our discord for real time notifications of new listings"]),

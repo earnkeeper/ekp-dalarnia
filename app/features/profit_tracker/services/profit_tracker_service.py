@@ -1,11 +1,11 @@
-from db.dalarnia_transactions_repo import MarketTransactionsRepo
+from db.dalarnia_transactions_repo import DalarniaTransactionsRepo
 from ekp_sdk.services import CoingeckoService
 from app.features.profit_tracker.services.tracker_transaction_document import TrackerTransactionDocument
 
 class ProfitTrackerService:
     def __init__(
         self,
-        market_transactions_repo: MarketTransactionsRepo,
+        market_transactions_repo: DalarniaTransactionsRepo,
         coingecko_service: CoingeckoService
     ):
         self.market_transactions_repo = market_transactions_repo
