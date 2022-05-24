@@ -5,10 +5,12 @@
 #     BoxesListingsService
 from app.features.profit_tracker.profit_tracker_page import page
 from app.features.profit_tracker.services.profit_tracker_service import ProfitTrackerService
+from app.features.profit_tracker.services.summary.players_summary_service import PlayersSummaryService
 from ekp_sdk.services import ClientService
 from ekp_sdk.util import client_currency, client_path
 
 PLAYERS_HISTORY_COLLECTION_NAME = "market_transactions"
+PLAYERS_SUMMARY_COLLECTION_NAME = "players_summary"
 # BOX_LISTINGS_COLLECTION_NAME = "metabomb_box_listings"
 # BOX_HISTORY_COLLECTION_NAME = "metabomb_box_history"
 # BOX_SUMMARY_COLLECTION_NAME = "metabomb_box_summary"
@@ -18,13 +20,14 @@ class ProfitTrackerController:
     def __init__(
         self,
         client_service: ClientService,
-        profit_tracker_service: ProfitTrackerService
+        profit_tracker_service: ProfitTrackerService,
         # boxes_listings_service: BoxesListingsService,
         # boxes_history_service: BoxesHistoryService,
-        # boxes_summary_service: BoxesSummaryService
+        players_summary_service: PlayersSummaryService
     ):
         self.client_service = client_service
         self.profit_tracker_service = profit_tracker_service
+        self.players_summary_service = players_summary_service
         self.path = 'profit_tracker'
 
     async def on_connect(self, sid):
@@ -37,7 +40,7 @@ class ProfitTrackerController:
         await self.client_service.emit_page(
             sid,
             self.path,
-            page(PLAYERS_HISTORY_COLLECTION_NAME)
+            page(PLAYERS_HISTORY_COLLECTION_NAME, PLAYERS_SUMMARY_COLLECTION_NAME)  # TODO
         )
 
     async def on_client_state_changed(self, sid, event):
@@ -48,7 +51,7 @@ class ProfitTrackerController:
             return
 
         await self.client_service.emit_busy(sid, PLAYERS_HISTORY_COLLECTION_NAME)
-        # await self.client_service.emit_busy(sid, BOX_HISTORY_COLLECTION_NAME)
+        await self.client_service.emit_busy(sid, PLAYERS_SUMMARY_COLLECTION_NAME)
         # await self.client_service.emit_busy(sid, BOX_SUMMARY_COLLECTION_NAME)
 
         currency = client_currency(event)
@@ -72,15 +75,15 @@ class ProfitTrackerController:
         #     listing_documents
         # )
         #
-        # # Summary
-        #
-        # summary_documents = self.boxes_summary_service.get_documents(
-        #     listing_documents, history_documents, currency)
-        #
-        # await self.client_service.emit_documents(
-        #     sid,
-        #     BOX_SUMMARY_COLLECTION_NAME,
-        #     summary_documents
-        # )
+        # Summary
+
+        summary_documents = await self.players_summary_service.get_documents(currency)
+
+        await self.client_service.emit_documents(
+            sid,
+            PLAYERS_SUMMARY_COLLECTION_NAME,
+            summary_documents
+        )
 
         await self.client_service.emit_done(sid, PLAYERS_HISTORY_COLLECTION_NAME)
+        await self.client_service.emit_done(sid, PLAYERS_SUMMARY_COLLECTION_NAME)

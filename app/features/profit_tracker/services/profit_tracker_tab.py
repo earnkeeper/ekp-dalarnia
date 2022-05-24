@@ -2,7 +2,7 @@
 #                                       HERO_BOX_NAME_IMAGE, MTB_ICON)
 from ekp_sdk.ui import (Col, Column, Container, Datatable, Div, Image, Link,
                         Paragraphs, Row, Span, collection, commify, documents,
-                        format_age, format_currency, format_mask_address,
+                        format_age, format_currency, format_datetime, format_mask_address,
                         format_template, is_busy, switch_case)
 
 
@@ -62,13 +62,6 @@ def table_row(HISTORY_COLLECTION_NAME):
             ),
         ]
     )
-
-
-def format_datetime(value):
-    return {
-        "method": "formatDatetime",
-        "params": [value]
-    }
 
 
 def timestamp_cell():
