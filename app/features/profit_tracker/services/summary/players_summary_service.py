@@ -15,10 +15,9 @@ class PlayersSummaryService:
 
     async def get_documents(self, currency):
         rate = await self.coingecko_service.get_latest_price('usd-coin', currency["id"])
-
         total_bnb_cost = (self.dalarnia_transactions_repo.filter_and_sum('bnbCostUsd') or 0) * rate
         total_dar_cost = (self.dalarnia_transactions_repo.filter_and_sum('darCostUsd') or 0) * rate
-        total_dar_revenue = (self.dalarnia_transactions_repo.filter_and_sum('darRevUsd') or 0)* rate
+        total_dar_revenue = (self.dalarnia_transactions_repo.filter_and_sum('darRevUsd') or 0) * rate
         profit_to_date = total_bnb_cost + total_dar_cost - total_dar_revenue
 
         return [

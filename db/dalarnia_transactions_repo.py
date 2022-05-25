@@ -50,7 +50,7 @@ class DalarniaTransactionsRepo:
         if not len(result):
             return None
 
-        return result[0]
+        return result[0]['total']
 
     def find_latest_block_number(self):
         results = list(

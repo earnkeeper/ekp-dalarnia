@@ -11,7 +11,7 @@ from ekp_sdk.util import client_currency, client_path
 
 PLAYERS_HISTORY_COLLECTION_NAME = "market_transactions"
 PLAYERS_SUMMARY_COLLECTION_NAME = "players_summary"
-# BOX_LISTINGS_COLLECTION_NAME = "metabomb_box_listings"
+PLAYER_TRACKER_FORM = "player_tracker_form"
 # BOX_HISTORY_COLLECTION_NAME = "metabomb_box_history"
 # BOX_SUMMARY_COLLECTION_NAME = "metabomb_box_summary"
 
@@ -40,7 +40,8 @@ class ProfitTrackerController:
         await self.client_service.emit_page(
             sid,
             self.path,
-            page(PLAYERS_HISTORY_COLLECTION_NAME, PLAYERS_SUMMARY_COLLECTION_NAME)  # TODO
+            page(PLAYERS_HISTORY_COLLECTION_NAME, PLAYERS_SUMMARY_COLLECTION_NAME,
+                 PLAYER_TRACKER_FORM)  # TODO
         )
 
     async def on_client_state_changed(self, sid, event):

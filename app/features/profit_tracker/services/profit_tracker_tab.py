@@ -10,6 +10,7 @@ def profit_tracker_tab(HISTORY_COLLECTION_NAME):
     return Container([
         Paragraphs(["Browse the last 1000 sales from the market place right here.",
                     "Check out our discord for real time notifications of new listings"]),
+
         Div([], class_name="mb-2"),
         table_row(HISTORY_COLLECTION_NAME)
     ])
@@ -21,9 +22,6 @@ def table_row(HISTORY_COLLECTION_NAME):
         busy_when=is_busy(collection(HISTORY_COLLECTION_NAME)),
         default_sort_field_id="timestamp",
         default_sort_asc=False,
-        filters=[
-            {"columnId": "item", "icon": "cil-spa"},
-        ],
         columns=[
             Column(
                 id="timestamp",
@@ -35,6 +33,7 @@ def table_row(HISTORY_COLLECTION_NAME):
                 id="description",
                 sortable=True,
                 cell=description_cell(),
+                searchable=True,
                 min_width="400px"
             ),
             Column(
