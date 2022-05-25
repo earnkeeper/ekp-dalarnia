@@ -33,7 +33,7 @@ class TransactionDecoderService:
         self.page_size = 2000
 
     async def decode_trans(self):
-        print("✨ Decoding market transactions..")
+        print("✨ Decoding dalarnia transactions..")
 
         # The block number from where the relevant transactions start...
         l_b = self.market_transactions_repo.find_latest_block_number()
@@ -102,7 +102,7 @@ class TransactionDecoderService:
             if len(next_trans) < self.page_size:
                 break
 
-        print("✅ Finished decoding market transactions..")
+        print("✅ Finished decoding dalarnia transactions..")
 
     async def __decode_tran(self, tran, params):
         to = tran['to']
@@ -114,10 +114,6 @@ class TransactionDecoderService:
                 f'⚠️ Could not parse description in transaction {tran["hash"]}'
             )
             return None
-
-        print(
-            f'✅ Parsed description in transactions {tran["hash"]}'
-        )
 
         hash = tran["hash"]
         timestamp = tran["timeStamp"]

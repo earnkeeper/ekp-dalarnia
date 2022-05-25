@@ -4,7 +4,7 @@ from app.features.profit_tracker.services.profit_tracker_tab import profit_track
 from ekp_sdk.util.clean_null_terms import clean_null_terms
 from app.utils.page_title import page_title
 from ekp_sdk.ui import (Card, Col, Container, Div, Image, Row, Span, Tab, Tabs, Button,
-                        format_currency, format_template, switch_case, Avatar, Form)
+                        format_currency, format_template, Input, Avatar, Form)
 
 
 def page(HISTORY_COLLECTION_NAME, SUMMARY_COLLECTION_NAME, PLAYER_TRACKER_FORM):
@@ -12,30 +12,46 @@ def page(HISTORY_COLLECTION_NAME, SUMMARY_COLLECTION_NAME, PLAYER_TRACKER_FORM):
         children=[
             page_title('shopping-cart', 'Player Profit and Loss'),
             summary_row(SUMMARY_COLLECTION_NAME),
-            player_tracker_form(HISTORY_COLLECTION_NAME),
+            player_tracker_form(),
             profit_tracker_tab(HISTORY_COLLECTION_NAME)
         ]
     )
 
 
-def player_tracker_form(HISTORY_COLLECTION_NAME):
+def player_tracker_form():
     return Form(
-        name="player_track_form",
-        schema=f"$.{HISTORY_COLLECTION_NAME}[0]",
+        name="player_address",
+        schema={
+            "type": "object",
+            "properties": {
+                "address": "string"
+            },
+        },
+        multi_record={
+            "idField": "address"
+        },
         children=[
-            Input(label="Player Address", name="player_input"),
-            Button(label="Add")
+            Row([
+                Col(
+                    "col-auto my-auto",
+                    [
+                        Input(
+                            label="Player Address",
+                            name="address",
+                            style={"minWidth": "240px"}
+                        ),
+                    ]
+                ),
+                Col(
+                    "col-auto my-auto",
+                    [
+                        Button(label="Add", is_submit=True)
+                    ]
+                )
+            ])
+            
         ]
     )
-
-def Input(label, name):
-    return {
-        "_type": "Input",
-        "props": clean_null_terms({
-            "label": label,
-            "name": name,
-        })
-    }
 
 
 def summary_row(SUMMARY_COLLECTION_NAME):
@@ -92,5 +108,3 @@ def summary_card(boxId):
                 ])
         ]
     )
-
-
