@@ -48,7 +48,7 @@ class PlayerController:
 
         # Transactions
         
-        transaction_documents = await self.player_service.get_documents(currency)
+        transaction_documents = await self.player_service.get_documents(currency, address)
 
         await self.client_service.emit_documents(
             sid,
@@ -58,7 +58,7 @@ class PlayerController:
 
         # Summary
 
-        summary_documents = await self.player_summary_service.get_documents(currency)
+        summary_documents = await self.player_summary_service.get_documents(currency, address)
 
         await self.client_service.emit_documents(
             sid,

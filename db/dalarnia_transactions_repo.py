@@ -23,9 +23,9 @@ class DalarniaTransactionsRepo:
 
         results = list(
             self.collection
-            .find()
-            .sort("timestamp")
-            .limit(limit)
+                .find()
+                .sort("timestamp")
+                .limit(limit)
         )
 
         print(
@@ -33,16 +33,30 @@ class DalarniaTransactionsRepo:
 
         return results
 
-    def filter_and_sum(self, field_name):
+    def filter_by_address(self, address):
+        result = list(
+            self.collection.find({
+                "player_address": address.lower()
+            })
+        )
+
+        return result
+
+    def filter_and_sum(self, field_name, address):
         result = list(
             self.collection.aggregate(
                 [
+                    {"$match":
+                        {
+                            "player_address": address.lower()
+                        }
+                    },
                     {
                         "$group":
-                        {
-                            "_id": None,
-                            "total": {"$sum": f"${field_name}"}
-                        }
+                            {
+                                "_id": None,
+                                "total": {"$sum": f"${field_name}"}
+                            }
                     }
                 ])
         )
@@ -55,9 +69,9 @@ class DalarniaTransactionsRepo:
     def find_latest_block_number(self):
         results = list(
             self.collection
-            .find()
-            .sort("blockNumber", -1)
-            .limit(1)
+                .find()
+                .sort("blockNumber", -1)
+                .limit(1)
         )
 
         if not len(results):

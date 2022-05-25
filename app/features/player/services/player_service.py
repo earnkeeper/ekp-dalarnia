@@ -11,11 +11,11 @@ class PlayerService:
         self.dalarnia_transactions_repo = dalarnia_transactions_repo
         self.coingecko_service = coingecko_service
 
-    async def get_documents(self, currency):
+    async def get_documents(self, currency, address):
         rate = await self.coingecko_service.get_latest_price('usd-coin', currency["id"])
 
-        models = self.dalarnia_transactions_repo.find_all(1000)
-
+        models = self.dalarnia_transactions_repo.filter_by_address(address)
+        # print(models)
         documents = []
 
         for model in models:
