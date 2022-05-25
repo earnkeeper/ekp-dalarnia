@@ -1,7 +1,7 @@
 from typing import Optional, TypedDict
 
 
-class TrackerTransactionDocument(TypedDict):
+class PlayerTransactionDocument(TypedDict):
     cost_bnb: Optional[float]
     cost_bnb_fiat: Optional[float]
     cost_dar: Optional[float]

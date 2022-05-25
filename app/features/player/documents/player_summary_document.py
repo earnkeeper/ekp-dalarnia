@@ -1,7 +1,7 @@
 from typing import TypedDict
 
 
-class TrackerSummaryDocument(TypedDict):
+class PlayerSummaryDocument(TypedDict):
     cost_bnb: float
     cost_bnb_fiat: float
     cost_dar: float

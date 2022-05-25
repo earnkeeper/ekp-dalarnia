@@ -6,17 +6,17 @@ from ekp_sdk.ui import (Col, Column, Container, Datatable, Div, Image, Link,
                         format_template, is_busy, switch_case)
 
 
-def profit_tracker_tab(HISTORY_COLLECTION_NAME):
+def transactions_table(TRANSACTIONS_COLLECTION_NAME):
     return Container([
         Div([], class_name="mb-2"),
-        table_row(HISTORY_COLLECTION_NAME)
+        table_row(TRANSACTIONS_COLLECTION_NAME)
     ])
 
 
-def table_row(HISTORY_COLLECTION_NAME):
+def table_row(TRANSACTIONS_COLLECTION_NAME):
     return Datatable(
-        data=documents(HISTORY_COLLECTION_NAME),
-        busy_when=is_busy(collection(HISTORY_COLLECTION_NAME)),
+        data=documents(TRANSACTIONS_COLLECTION_NAME),
+        busy_when=is_busy(collection(TRANSACTIONS_COLLECTION_NAME)),
         default_sort_field_id="timestamp",
         default_sort_asc=False,
         columns=[

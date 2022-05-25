@@ -1,18 +1,11 @@
 from decouple import AutoConfig
 from ekp_sdk import BaseContainer
-# from app.features.dashboard.dashboard_controller import DashboardController
-# from app.features.dashboard.dashboard_opens_service import DashboardOpensService
-
-# from app.features.market.market_controller import MarketController
-from app.features.profit_tracker.profit_tracker_controller import ProfitTrackerController
-from app.features.profit_tracker.services.profit_tracker_service import ProfitTrackerService
-from app.features.profit_tracker.services.summary.players_summary_service import PlayersSummaryService
-# from app.features.market.boxes.history.boxes_history_service import BoxesHistoryService
-# from app.features.market.boxes.listings.boxes_listings_service import BoxesListingsService
-# from app.features.market.boxes.boxes_summary_service import BoxesSummaryService
-# from db.dalarnia_transactions_repo import BoxOpensRepo
+from app.features.player.player_controller import PlayerController
+from app.features.player.services.player_service import PlayerService
+from app.features.player.services.player_summary_service import PlayersSummaryService
+from app.features.players.players_controller import PlayersController
+from app.features.players.players_service import PlayersService
 from db.dalarnia_transactions_repo import DalarniaTransactionsRepo
-
 
 class AppContainer(BaseContainer):
     def __init__(self):
@@ -22,60 +15,43 @@ class AppContainer(BaseContainer):
 
         # DB
 
-        # self.box_opens_repo = BoxOpensRepo(
-        #     mg_client=self.mg_client,
-        # )
-
-        self.market_transactions_repo = DalarniaTransactionsRepo(
+        self.dalarnia_transactions_repo = DalarniaTransactionsRepo(
             mg_client=self.mg_client,
         )
 
-        # FEATURES - MARKET
+        # FEATURES - PLAYER
 
-        self.profit_tracker_service = ProfitTrackerService(
+        self.player_service = PlayerService(
             coingecko_service=self.coingecko_service,
-            market_transactions_repo=self.market_transactions_repo
+            dalarnia_transactions_repo=self.dalarnia_transactions_repo
         )
-
-        # self.market_listings_service = BoxesListingsService(
-        #     coingecko_service=self.coingecko_service
-        # )
-        #
-        # self.market_history_service = BoxesHistoryService(
-        #     market_transactions_repo=self.market_transactions_repo,
-        #     coingecko_service=self.coingecko_service
-        # )
 
         self.player_summary_service = PlayersSummaryService(
-            dalarnia_transactions_repo=self.market_transactions_repo,
-            coingecko_service=self.coingecko_service
+            coingecko_service=self.coingecko_service,
+            dalarnia_transactions_repo=self.dalarnia_transactions_repo,
         )
 
-        self.market_controller = ProfitTrackerController(
+        self.player_controller = PlayerController(
             client_service=self.client_service,
-            profit_tracker_service=self.profit_tracker_service,
-            players_summary_service=self.player_summary_service
-            # boxes_listings_service=self.market_listings_service,
-            # boxes_history_service=self.market_history_service,
-            # boxes_summary_service=self.market_summary_service
+            player_service=self.player_service,
+            player_summary_service=self.player_summary_service
+        )
+        
+        # FEATURES - PLAYERS
+
+        self.players_service = PlayersService(
         )
 
-        # FEATURES - DASHBOARD
-
-        # self.dashboard_opens_service = DashboardOpensService(
-        #     box_opens_repo=self.box_opens_repo
-        # )
-        #
-        # self.dashboard_controller = DashboardController(
-        #     client_service=self.client_service,
-        #     dashboard_opens_service=self.dashboard_opens_service,
-        # )
+        self.players_controller = PlayersController(
+            client_service=self.client_service,
+            players_service=self.players_service,
+        )
 
 
 if __name__ == '__main__':
     container = AppContainer()
 
-    container.client_service.add_controller(container.market_controller)
-    # container.client_service.add_controller(container.dashboard_controller)
+    container.client_service.add_controller(container.player_controller)
+    container.client_service.add_controller(container.players_controller)
 
     container.client_service.listen()
