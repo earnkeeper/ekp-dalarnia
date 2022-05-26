@@ -3,7 +3,7 @@
   "gameId": "dalarnia",
   "name": "Profit Tracker",
   "github": "https://github.com/earnkeeper/ekp-dalarnia",
-  "image": "/static/market.jpeg",
+  "image": "/static/market.jpg",
   "mainPage": "players",
   "description": "Track you profit and loss across multiple wallets",
   "features": ["Profit Tracker"]
