@@ -17,7 +17,7 @@ class TransactionDecoderService:
             coingecko_service: CoingeckoService,
             contract_logs_repo: ContractLogsRepo,
             contract_transactions_repo: ContractTransactionsRepo,
-            market_transactions_repo: DalarniaTransactionsRepo,
+            dalarnia_transactions_repo: DalarniaTransactionsRepo,
             etherscan_service: EtherscanService,
             web3_service: Web3Service,
             hist_utils: PlayerHistory
@@ -27,7 +27,7 @@ class TransactionDecoderService:
         self.contract_logs_repo = contract_logs_repo
         self.contract_transactions_repo = contract_transactions_repo
         self.etherscan_service = etherscan_service
-        self.market_transactions_repo = market_transactions_repo
+        self.dalarnia_transactions_repo = dalarnia_transactions_repo
         self.web3_service = web3_service
         self.hist_utils = hist_utils
         self.page_size = 2000
@@ -36,11 +36,11 @@ class TransactionDecoderService:
         print("✨ Decoding dalarnia transactions..")
 
         # The block number from where the relevant transactions start...
-        l_b = self.market_transactions_repo.find_latest_block_number()
+        l_b = self.dalarnia_transactions_repo.find_latest_block_number()
         latest_block = 17032108 if l_b == 0 else l_b
 
-        if self.market_transactions_repo.find_latest_block_number() != 0:
-            latest_block = self.market_transactions_repo.find_latest_block_number() != 0
+        if self.dalarnia_transactions_repo.find_latest_block_number() != 0:
+            latest_block = self.dalarnia_transactions_repo.find_latest_block_number() != 0
 
         while True:
 
@@ -97,7 +97,7 @@ class TransactionDecoderService:
                 latest_block = block_number
 
             if len(buys):
-                self.market_transactions_repo.save(buys)
+                self.dalarnia_transactions_repo.save(buys)
 
             if len(next_trans) < self.page_size:
                 break

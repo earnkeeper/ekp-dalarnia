@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: job
+  name: sync
 spec:
   schedule: "* * * * *"
   concurrencyPolicy: Forbid
@@ -10,12 +10,12 @@ spec:
       template:
         metadata:
           labels:
-            job: job
+            job: sync
         spec:
           restartPolicy: Never
           containers:
             - name: python
-              image: "{{ .Values.werf.image.job }}"
+              image: "{{ .Values.werf.image.sync }}"
               workingDir: /app
               env:
                 - name: MONGO_URI

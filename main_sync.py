@@ -14,7 +14,7 @@ class AppContainer(BaseContainer):
 
         super().__init__(config)
 
-        self.market_transactions_repo = DalarniaTransactionsRepo(
+        self.dalarnia_transactions_repo = DalarniaTransactionsRepo(
             mg_client=self.mg_client,
         )
 
@@ -24,14 +24,14 @@ class AppContainer(BaseContainer):
             web3_service=self.web3_service,
         )
 
-        self.market_decoder_service = TransactionDecoderService(
+        self.transaction_decoder_service = TransactionDecoderService(
             cache_service=self.cache_service,
             coingecko_service=self.coingecko_service,
             contract_logs_repo=self.contract_logs_repo,
             contract_transactions_repo=self.contract_transactions_repo,
             etherscan_service=self.etherscan_service,
             hist_utils=self.hist_utils,
-            market_transactions_repo=self.market_transactions_repo,
+            dalarnia_transactions_repo=self.dalarnia_transactions_repo,
             web3_service=self.web3_service,
         )
 
@@ -90,5 +90,5 @@ if __name__ == '__main__':
     )
 
     loop.run_until_complete(
-        container.market_decoder_service.decode_trans()
+        container.transaction_decoder_service.decode_trans()
     )

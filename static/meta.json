@@ -1,10 +1,10 @@
 {
-  "id": "dalarnia-marketplace",
+  "id": "dalarnia",
   "gameId": "dalarnia",
   "name": "Profit Tracker",
   "github": "https://github.com/earnkeeper/ekp-dalarnia",
   "image": "/static/market.jpg",
   "mainPage": "profit_tracker",
-  "description": "Preview the Enhanced Dalarnia Marketplace before official release..",
-  "features": ["Enhanced Marketplace"]
+  "description": "Track you profit and loss across multiple wallets",
+  "features": ["Profit Tracker"]
 }

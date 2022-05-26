@@ -5,8 +5,8 @@ WORKDIR /app
 COPY ./requirements.txt ./requirements.txt
 RUN pip3 install -r requirements.txt
 
-COPY ./job ./job
+COPY ./sync ./sync
 COPY ./db ./db
-COPY ./main_job.py ./main_job.py
+COPY ./main_sync.py ./main_sync.py
 
-CMD [ "python3", "main_job.py" ]
+CMD [ "python3", "main_sync.py" ]

@@ -12,7 +12,7 @@ class DalarniaTransactionsRepo:
     ):
         self.mg_client = mg_client
 
-        self.collection = self.mg_client.db['market_transactions']
+        self.collection = self.mg_client.db['dalarnia_transactions']
         self.collection.create_index("hash", unique=True)
         self.collection.create_index("blockNumber")
         self.collection.create_index("player_address")
@@ -29,7 +29,7 @@ class DalarniaTransactionsRepo:
         )
 
         print(
-            f"⏱  [MarketTransactionsRepo.find_all({len(results)})] {time.perf_counter() - start:0.3f}s")
+            f"⏱  [DalarniaTransactionsRepo.find_all({len(results)})] {time.perf_counter() - start:0.3f}s")
 
         return results
 
@@ -88,4 +88,4 @@ class DalarniaTransactionsRepo:
         )
 
         print(
-            f"⏱  [MarketTransactionsRepo.save({len(trans)})] {time.perf_counter() - start:0.3f}s")
+            f"⏱  [DalarniaTransactionsRepo.save({len(trans)})] {time.perf_counter() - start:0.3f}s")
