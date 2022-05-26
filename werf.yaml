@@ -1,6 +1,10 @@
 configVersion: 1
 project: dalarnia
 ---
+image: app
+dockerfile: Dockerfile.app
+context: .
+---
 image: sync
 dockerfile: Dockerfile.sync
 context: .
