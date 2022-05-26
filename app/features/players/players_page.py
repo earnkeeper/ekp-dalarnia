@@ -2,7 +2,7 @@ from app.utils.page_title import page_title
 from ekp_sdk.ui import (Button, Card, Col, Column, Container, Datatable, Div,
                         Form, Image, Input, Row, Span, Tab, Tabs, collection,
                         documents, format_currency, format_template, is_busy,
-                        navigate, remove_form_record)
+                        navigate, remove_form_record, commify)
 
 
 def players_page(PLAYERS_COLLECTION_NAME):
@@ -70,6 +70,24 @@ def table_row(PLAYERS_COLLECTION_NAME):
                 id="id"
             ),
             Column(
+                id="cost",
+                sortable=True,
+                right=True,
+                cell=price_cell(price="cost", price_fiat="cost_fiat")
+            ),
+            Column(
+                id="rev",
+                sortable=True,
+                right=True,
+                cell=price_cell(price="rev", price_fiat="rev_fiat")
+            ),
+            Column(
+                id="profit",
+                sortable=True,
+                right=True,
+                cell=price_cell(price="profit", price_fiat="profit_fiat")
+            ),
+            Column(
                 id="actions",
                 width="60px",
                 title="",
@@ -83,3 +101,29 @@ def table_row(PLAYERS_COLLECTION_NAME):
             )
         ]
     )
+
+
+def price_cell(price, price_fiat):
+    return Row([
+        Col(
+            class_name="col-12 text-right",
+            children=[
+                Span(format_currency(f"$.{price_fiat}", "$.fiat_symbol"))
+            ]
+        ),
+        # Col(
+        #     class_name="col-12 text-right font-small-1",
+        #     children=[
+        #         Row([
+        #             Col(),
+        #             Col(
+        #                 class_name="col-auto pl-0 my-auto text-success",
+        #                 children=[
+        #                     Span(commify(f"$.{price}"))
+        #                 ]
+        #             )
+        #         ])
+        #
+        #     ]
+        # ),
+    ])

@@ -130,6 +130,16 @@ class TransactionDecoderService:
             )
         )
 
+        dar_cache_key = f"dar_price_{date_str}"
+        dar_usd_price = await self.cache_service.wrap(
+            dar_cache_key,
+            lambda: self.coingecko_service.get_historic_price(
+                "mines-of-dalarnia",
+                date_str,
+                "usd"
+            )
+        )
+
         bnb_cost = Web3.fromWei(
             tran["gasUsed"] * int(tran["gasPrice"]), 'ether')
 
@@ -143,9 +153,9 @@ class TransactionDecoderService:
             "bnbCost": float(bnb_cost) if bnb_cost else None,
             "bnbCostUsd": float(bnb_cost) * bnb_usd_price if bnb_cost else None,
             "darCost": float(cost_dar) if cost_dar else None,
-            "darCostUsd": float(cost_dar) * bnb_usd_price if cost_dar else None,
+            "darCostUsd": float(cost_dar) * dar_usd_price if cost_dar else None,
             "darRev": float(rev_dar) if rev_dar else None,
-            "darRevUsd": float(rev_dar) * bnb_usd_price if rev_dar else None,
+            "darRevUsd": float(rev_dar) * dar_usd_price if rev_dar else None,
             "blockNumber": block_number,
             "player_address": tran["from"],
             "description": description,

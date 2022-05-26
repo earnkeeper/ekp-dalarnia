@@ -65,29 +65,29 @@ if __name__ == '__main__':
         '0x3c45e5c77cc40eb51eaa5e85c1a9b30a43764ca9'  # Resources
     ]
 
-    futures = []
+    # futures = []
 
     start_block = 17573419  # This is where the market pairs opened
 
-    for contract_address in contract_addresses:
-        futures.append(
-            container.transaction_sync_service.sync_transactions(
-                contract_address,
-                start_block
-            )
-        )
-
-    for log_address in log_addresses:
-        futures.append(
-            container.transaction_sync_service.sync_logs(
-                log_address,
-                start_block
-            )
-        )
-
-    loop.run_until_complete(
-        asyncio.gather(*futures)
-    )
+    # for contract_address in contract_addresses:
+    #     futures.append(
+    #         container.transaction_sync_service.sync_transactions(
+    #             contract_address,
+    #             start_block
+    #         )
+    #     )
+    #
+    # for log_address in log_addresses:
+    #     futures.append(
+    #         container.transaction_sync_service.sync_logs(
+    #             log_address,
+    #             start_block
+    #         )
+    #     )
+    #
+    # loop.run_until_complete(
+    #     asyncio.gather(*futures)
+    # )
 
     loop.run_until_complete(
         container.market_decoder_service.decode_trans()

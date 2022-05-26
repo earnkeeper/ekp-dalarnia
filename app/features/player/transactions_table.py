@@ -49,7 +49,7 @@ def table_row(TRANSACTIONS_COLLECTION_NAME):
                 id="revenue_dar",
                 sortable=True,
                 right=True,
-                cell=price_cell(price="revenue_dar", price_fiat="revenue_dar_fiat")
+                cell=price_cell(price="darRev", price_fiat="darRevUsd")
             ),
             Column(
                 id="spacer",

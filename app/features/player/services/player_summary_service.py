@@ -18,7 +18,7 @@ class PlayersSummaryService:
         total_bnb_cost = (self.dalarnia_transactions_repo.filter_and_sum('bnbCostUsd', address) or 0) * rate
         total_dar_cost = (self.dalarnia_transactions_repo.filter_and_sum('darCostUsd', address) or 0) * rate
         total_dar_revenue = (self.dalarnia_transactions_repo.filter_and_sum('darRevUsd', address) or 0) * rate
-        profit_to_date = total_bnb_cost + total_dar_cost - total_dar_revenue
+        profit_to_date = total_dar_revenue - total_bnb_cost - total_dar_cost
 
         return [
             {

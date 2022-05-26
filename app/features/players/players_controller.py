@@ -44,7 +44,7 @@ class PlayersController:
         currency = client_currency(event)
 
         address_form_values = form_values(event, "dalarnia_player_addresses")
-        documents = await self.players_service.get_documents(address_form_values or [])
+        documents = await self.players_service.get_documents(currency, address_form_values or [])
 
         await self.client_service.emit_documents(
             sid,

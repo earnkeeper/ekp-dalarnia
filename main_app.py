@@ -40,6 +40,8 @@ class AppContainer(BaseContainer):
         # FEATURES - PLAYERS
 
         self.players_service = PlayersService(
+            dalarnia_transactions_repo=self.dalarnia_transactions_repo,
+            coingecko_service=self.coingecko_service
         )
 
         self.players_controller = PlayersController(
