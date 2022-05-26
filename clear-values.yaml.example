@@ -1,8 +1,14 @@
+web3:
+  providerUrl: https://bsc-dataseed3.ninicoin.io
 etherscan:
   apiKey: 
   baseUrl: https://api.bscscan.com/api
 mongodb:
   uri: 
-  dbName: 
-web3:
-  providerUrl: https://bsc-dataseed3.ninicoin.io
+  dbName:
+    staging: dalarnia-staging
+    _default: dalarnia
+issuer:
+  email: 
+ingress:
+  hostname: 
