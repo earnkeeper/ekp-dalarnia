@@ -1,10 +1,10 @@
 from app.utils.page_title import page_title
 from ekp_sdk.ui import (Button, Card, Col, Column, Container, Datatable, Div,
                         Form, Image, Input, Row, Span, Tab, Tabs, format_currency, format_template, is_busy,
-                        navigate, remove_form_record, commify)
-
+                        navigate, remove_form_record, commify, Link, format_mask_address)
 
 from ekp_sdk.util import collection, documents
+
 
 def players_page(PLAYERS_COLLECTION_NAME):
     return Container(
@@ -57,18 +57,11 @@ def table_row(PLAYERS_COLLECTION_NAME):
         default_sort_field_id="id",
         data=documents(PLAYERS_COLLECTION_NAME),
         busy_when=is_busy(collection(PLAYERS_COLLECTION_NAME)),
-        on_row_clicked=navigate(
-            format_template(
-                "player/{{ address }}",
-                {
-                    "address": "$.id"
-                }
-            ),
-            new_tab=True
-        ),
         columns=[
             Column(
-                id="id"
+                id="id",
+                title="Address",
+                cell=__address_link()
             ),
             Column(
                 id="cost",
@@ -101,6 +94,22 @@ def table_row(PLAYERS_COLLECTION_NAME):
                 )
             )
         ]
+    )
+
+
+def __address_link():
+    return Link(
+        # content=format_mask_address("$.id"),
+        content="$.id",
+        # class_name="d-block font-small-2",
+        href=
+        format_template(
+            "player/{{ address }}",
+            {
+                "address": "$.id"
+            }
+        )
+
     )
 
 
