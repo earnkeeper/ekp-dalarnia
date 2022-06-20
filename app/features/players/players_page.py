@@ -99,9 +99,7 @@ def table_row(PLAYERS_COLLECTION_NAME):
 
 def __address_link():
     return Link(
-        # content=format_mask_address("$.id"),
-        content="$.id",
-        # class_name="d-block font-small-2",
+        content=format_mask_address("$.id"),
         href=
         format_template(
             "player/{{ address }}",
