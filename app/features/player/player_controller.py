@@ -36,7 +36,7 @@ class PlayerController:
 
         path = client_path(event)
 
-        if not path.startswith("player/"):
+        if not path or not path.startswith("player/"):
             return
 
         await self.client_service.emit_busy(sid, TRANSACTIONS_COLLECTION_NAME)
