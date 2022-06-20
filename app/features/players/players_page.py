@@ -71,6 +71,7 @@ def table_row(PLAYERS_COLLECTION_NAME):
             ),
             Column(
                 id="rev",
+                title="Revenue",
                 sortable=True,
                 right=True,
                 cell=price_cell(price="rev", price_fiat="rev_fiat")

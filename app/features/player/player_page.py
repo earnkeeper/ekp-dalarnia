@@ -79,7 +79,6 @@ def summary_card(boxId):
                                 content=format_template(
                                     "{{ price }}",
                                     {
-                                        # "price": "$.total_price"
                                         "price": format_currency("$.total_price", "$.fiatSymbol")
                                     }
                                 ),
