@@ -19,7 +19,7 @@ class PlayersController:
         await self.client_service.emit_menu(
             sid,
             'users',
-            'Players',
+            'Player History',
             self.path
         )
         

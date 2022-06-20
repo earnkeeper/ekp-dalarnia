@@ -9,7 +9,7 @@ from ekp_sdk.util import collection, documents
 def players_page(PLAYERS_COLLECTION_NAME):
     return Container(
         children=[
-            page_title('users', 'Players'),
+            page_title('users', 'Player History'),
             form_row(),
             table_row(PLAYERS_COLLECTION_NAME)
         ]
