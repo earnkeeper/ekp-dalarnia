@@ -24,17 +24,25 @@ class PlayerService:
 
         return documents
 
+    def remove_on_from_approve(self, description):
+        """ temporary method """
+        if "Approve" in description:
+            description = description.split(" on")[0]
+        return description
+
+
+
     def map_document(self, model, currency, rate):
 
         model: PlayerTransactionDocument = {
-            "cost_bnb": model["bnbCost"],
+            "cost_bnb": round(model["bnbCost"], 5) if model["bnbCost"] else None,
             "cost_bnb_fiat": model["bnbCostUsd"] * rate if model["bnbCostUsd"] else model["bnbCostUsd"],
-            "cost_dar": model["darCost"],
+            "cost_dar": round(model["darCost"], 5) if model["darCost"] else None,
             "cost_dar_fiat": model["darCostUsd"] * rate if model["darCostUsd"] else model["darCostUsd"],
-            "description": model["description"],
+            "description": self.remove_on_from_approve(model["description"]),
             "fiat_symbol": currency["symbol"],
             "id": model["hash"],
-            "darRev": model["darRev"],
+            "darRev": round(model["darRev"], 5) if model["darRev"] else None,
             "darRevUsd": model["darRevUsd"] * rate if model["darRevUsd"] else model["darRevUsd"],
             "timestamp": model["timestamp"],
             "transaction_hash": model["hash"],

@@ -1,9 +1,10 @@
 from app.utils.page_title import page_title
 from ekp_sdk.ui import (Button, Card, Col, Column, Container, Datatable, Div,
-                        Form, Image, Input, Row, Span, Tab, Tabs, collection,
-                        documents, format_currency, format_template, is_busy,
+                        Form, Image, Input, Row, Span, Tab, Tabs, format_currency, format_template, is_busy,
                         navigate, remove_form_record, commify)
 
+
+from ekp_sdk.util import collection, documents
 
 def players_page(PLAYERS_COLLECTION_NAME):
     return Container(

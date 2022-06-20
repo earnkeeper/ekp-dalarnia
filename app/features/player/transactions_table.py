@@ -1,10 +1,11 @@
 # from app.utils.game_constants import (HERO_BOX_NAME_CONTRACT,
 #                                       HERO_BOX_NAME_IMAGE, MTB_ICON)
 from ekp_sdk.ui import (Col, Column, Container, Datatable, Div, Image, Link,
-                        Paragraphs, Row, Span, collection, commify, documents,
+                        Paragraphs, Row, Span, commify,
                         format_age, format_currency, format_datetime, format_mask_address,
                         format_template, is_busy, switch_case)
 
+from ekp_sdk.util import collection, documents
 
 def transactions_table(TRANSACTIONS_COLLECTION_NAME):
     return Container([
@@ -63,15 +64,18 @@ def table_row(TRANSACTIONS_COLLECTION_NAME):
 def timestamp_cell():
     return Row([
         Col(
-            class_name="my-auto col-auto pr-0",
+            class_name="col-12",
             children=[
                 Span(format_age("$.timestamp"))
             ]
         ),
         Col(
-            class_name="my-auto col-auto pr-0",
+            class_name="col-12",
             children=[
-                Span(format_datetime("$.timestamp"))
+                Span(
+                    content=format_datetime("$.timestamp"),
+                    class_name="font-small-2"
+                )
             ]
         ),
     ])
@@ -92,7 +96,8 @@ def description_cell():
                 class_name="col-12",
                 children=[
                     Span(
-                        format_mask_address("$.transaction_hash")
+                        format_mask_address("$.transaction_hash"),
+                        class_name="font-small-2"
                     )
                 ]
             )
@@ -117,7 +122,7 @@ def price_cell(price, price_fiat):
                     Col(
                         class_name="col-auto pl-0 my-auto text-success",
                         children=[
-                            Span(commify(f"$.{price}"))
+                            Span(f"$.{price}")
                         ]
                     )
                 ])

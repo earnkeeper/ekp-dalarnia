@@ -1,5 +1,5 @@
 from ekp_sdk.ui import (Card, Col, Container, Div, Image, Row, Span, Tab, Tabs, Button,
-                        format_currency, format_template, Input, Avatar, Form)
+                        format_currency, format_template, Input, Avatar, Form, Link, format_mask_address)
 from app.features.player.transactions_table import transactions_table
 from app.utils.page_title import page_title
 
@@ -9,6 +9,7 @@ def player_page(TRANSACTIONS_COLLECTION_NAME, SUMMARY_COLLECTION_NAME):
         children=[
             page_title('shopping-cart', 'Player Profit and Loss'),
             player_address(SUMMARY_COLLECTION_NAME),
+            Div(style={"marginBottom": "10px"}),
             summary_row(SUMMARY_COLLECTION_NAME),
             transactions_table(TRANSACTIONS_COLLECTION_NAME)
         ]
@@ -19,11 +20,18 @@ def player_address(SUMMARY_COLLECTION_NAME):
     return Container(
         context=f"$.{SUMMARY_COLLECTION_NAME}[0]",
         children=[
-            Row([
-                Col("col-auto", [
-                    Span("$.id", "font-medium-4 font-weight-bold")
-                ])
-            ])
+            Link(
+                content=format_mask_address("$.id"),
+                class_name="d-block font-small-2",
+                external_icon=True,
+                external=True,
+                href=format_template(
+                    "https://bscscan.com/address/{{ address }}",
+                    {
+                        "address": "$.id"
+                    }
+                )
+            ),
         ]
     )
 
@@ -58,9 +66,9 @@ def summary_card(boxId):
                 class_name="p-1",
                 children=[
                     Row([
-                        Col("col-auto", [
+                        Col("col-auto my-auto pr-0", [
                             Avatar(
-                                icon="avard",
+                                icon="award",
                                 size="sm",
                             )
                         ]),
