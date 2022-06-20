@@ -5,6 +5,6 @@
   "github": "https://github.com/earnkeeper/ekp-dalarnia",
   "image": "/static/market.jpg",
   "mainPage": "players",
-  "description": "Track you profit and loss across multiple wallets",
+  "description": "Track your Mines of Dalarnia profit and loss across multiple wallets",
   "features": ["Profit Tracker"]
 }
