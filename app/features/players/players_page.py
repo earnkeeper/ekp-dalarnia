@@ -9,7 +9,7 @@ from ekp_sdk.util import collection, documents
 def players_page(PLAYERS_COLLECTION_NAME):
     return Container(
         children=[
-            page_title('users', 'Players'),
+            page_title('users', 'Player History'),
             form_row(),
             table_row(PLAYERS_COLLECTION_NAME)
         ]
@@ -71,6 +71,7 @@ def table_row(PLAYERS_COLLECTION_NAME):
             ),
             Column(
                 id="rev",
+                title="Revenue",
                 sortable=True,
                 right=True,
                 cell=price_cell(price="rev", price_fiat="rev_fiat")
@@ -99,9 +100,7 @@ def table_row(PLAYERS_COLLECTION_NAME):
 
 def __address_link():
     return Link(
-        # content=format_mask_address("$.id"),
-        content="$.id",
-        # class_name="d-block font-small-2",
+        content=format_mask_address("$.id"),
         href=
         format_template(
             "player/{{ address }}",

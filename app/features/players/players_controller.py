@@ -19,7 +19,7 @@ class PlayersController:
         await self.client_service.emit_menu(
             sid,
             'users',
-            'Players',
+            'Player History',
             self.path
         )
         
@@ -36,7 +36,7 @@ class PlayersController:
 
         path = client_path(event)
 
-        if (path != self.path):
+        if path != self.path:
             return
 
         await self.client_service.emit_busy(sid, PLAYERS_COLLECTION_NAME)
