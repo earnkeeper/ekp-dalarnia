@@ -72,6 +72,8 @@ class PlayerHistory:
             descr = f'Buy 1 x Dig on Plot Id: {param_dict["_tokenId"]}'
         elif '_recipeId' in param_dict.keys() and '_tokenIds' in param_dict.keys():
             descr = self.craft_handler(param_dict)
+        elif '_plotTokenId' in param_dict.keys():
+            descr = "Plot RU"
         elif 'approved' in param_dict.keys():
             descr = f'Approve DAR for spending on {param_dict["operator"].lower()}'
 

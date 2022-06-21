@@ -55,6 +55,7 @@ class TransactionDecoderService:
             buys = []
 
             for next_tran in next_trans:
+                # if next_tran['hash'] == '0xf61c887165f8c6e3676afb0eb91c9987614b1ba7efe7605069de5a139f44dda9':
                 to = next_tran['to']
                 if not to:
                     print(

@@ -26,22 +26,22 @@ class PlayersSummaryService:
                 "updated": datetime.now().timestamp(),
                 "total_bnb_cost": {
                     "name": "BNB Cost",
-                    "total_price": total_bnb_cost,
+                    "total_price": total_bnb_cost if total_bnb_cost else "0",
                     "fiatSymbol": currency["symbol"]
                 },
                 "total_dar_cost": {
                     "name": "DAR Cost",
-                    "total_price": total_dar_cost,
+                    "total_price": total_dar_cost if total_dar_cost else "0",
                     "fiatSymbol": currency["symbol"]
                 },
                 "total_dar_revenue": {
                     "name": "DAR Revenue",
-                    "total_price": total_dar_revenue,
+                    "total_price": total_dar_revenue if total_dar_revenue else "0",
                     "fiatSymbol": currency["symbol"]
                 },
                 "profit_to_date": {
                     "name": "Profit to Date",
-                    "total_price": profit_to_date,
+                    "total_price": profit_to_date if profit_to_date else "0",
                     "fiatSymbol": currency["symbol"]
                 },
             }

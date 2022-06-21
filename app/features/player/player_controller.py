@@ -1,3 +1,5 @@
+from pprint import pprint
+
 from ekp_sdk.services import ClientService
 from ekp_sdk.util import client_currency, client_path
 from app.features.player.player_page import player_page
@@ -59,6 +61,8 @@ class PlayerController:
         # Summary
 
         summary_documents = await self.player_summary_service.get_documents(currency, address)
+
+        pprint(summary_documents)
 
         await self.client_service.emit_documents(
             sid,
